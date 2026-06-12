@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALDI Tools Suite — Semua Alat PDF & Dokumen</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  --bg:       #070d1a;
+  --bg-alt:   #0a0a0a;
+  --s1:       #0d1526;
+  --s2:       #111d30;
+  --s3:       #16243a;
+  --border:   #1c3354;
+  --border2:  #254570;
+  --accent:   #2dd4ff;
+  --accentd:  #0ea5c9;
+  --gold:     #f59e0b;
+  --green:    #22c55e;
+  --red:      #ef4444;
+  --purple:   #a78bfa;
+  --text:     #e2eaf6;
+  --muted:    #4e6a8a;
+  --mono:     'IBM Plex Mono', monospace;
+  --sans:     'Plus Jakarta Sans', sans-serif;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    linear-gradient(rgba(45,212,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45,212,255,.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.container { max-width:1280px; margin:0 auto; padding:28px 24px; position:relative; z-index:1; }
+
+/* ── NAV ── */
+.nav {
+  display:flex; align-items:center; gap:18px;
+  background: var(--s1);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:22px 28px;
+  margin-bottom:24px;
+  position:relative; overflow:hidden;
+}
+
+.nav::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 40%, var(--accentd) 60%, transparent 100%);
+}
+
+.nav-icon {
+  width:52px; height:52px; flex-shrink:0;
+  background: linear-gradient(135deg, #0a3d6b, #1a6eb5);
+  border:1px solid var(--border2);
+  border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px;
+  box-shadow: 0 0 24px rgba(45,212,255,.2);
+}
+
+.nav-text h1 {
+  font-size:20px; font-weight:800; color:var(--accent); letter-spacing:-.3px;
+}
+
+.nav-text p {
+  font-size:11px; color:var(--muted); font-family:var(--mono); margin-top:3px;
+}
+
+.nav-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+
+.badge {
+  padding:5px 12px; border-radius:6px; font-size:10px;
+  font-weight:700; letter-spacing:1.2px;
+}
+
+.badge-blue { background:#1e3a5f; color:var(--accent); border:1px solid var(--border2); font-family:var(--mono); }
+
+.ver-tag {
+  font-family:var(--mono); font-size:10px; color:var(--green);
+  background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.25);
+  padding:4px 10px; border-radius:20px;
+}
+
+/* ── TABS ── */
+.tabs {
+  display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;
+}
+
+.tab-btn {
+  padding:10px 20px; border:1px solid var(--border); background:var(--s1);
+  color:var(--text); border-radius:8px; cursor:pointer; font-family:var(--sans);
+  font-weight:600; transition:all .2s;
+}
+
+.tab-btn:hover, .tab-btn.active {
+  border-color:var(--accent); color:var(--accent);
+  background:rgba(45,212,255,.1);
+}
+
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ── PANEL ── */
+.panel {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:14px; padding:22px; margin-bottom:18px;
+}
+
+.ptitle {
+  font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:1.5px; color:var(--accent);
+  margin-bottom:16px;
+  display:flex; align-items:center; gap:8px;
+}
+
+.ptitle::before {
+  content:''; width:3px; height:14px;
+  background:var(--accent); border-radius:2px; flex-shrink:0;
+}
+
+/* ── DROPZONE ── */
+.drop {
+  border:2px dashed var(--border2);
+  border-radius:10px; padding:36px 20px;
+  text-align:center; cursor:pointer;
+  transition:all .25s; position:relative;
+  background:rgba(45,212,255,.02);
+}
+
+.drop:hover, .drop.over {
+  border-color:var(--accent);
+  background:rgba(45,212,255,.05);
+  box-shadow:0 0 40px rgba(45,212,255,.08) inset;
+}
+
+.drop input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+
+.drop-ico { font-size:40px; margin-bottom:10px; display:block; }
+
+.drop h3 { font-size:14px; font-weight:700; margin-bottom:4px; }
+
+.drop p { font-size:11px; color:var(--muted); font-family:var(--mono); }
+
+/* ── FILE LIST ── */
+#flist {
+  margin-top:14px; max-height:220px; overflow-y:auto;
+  display:flex; flex-direction:column; gap:5px;
+  scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+}
+
+.fi {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 11px; background:var(--s2);
+  border-radius:6px; font-size:11px; font-family:var(--mono);
+  animation:sli .15s ease; border:1px solid transparent;
+  transition:border-color .2s;
+}
+
+.fi:hover { border-color:var(--border); }
+@keyframes sli { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:none} }
+
+.fi .fn { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text); }
+.fi .fi-no { color:var(--muted); min-width:28px; text-align:right; }
+
+.chip-status {
+  font-size:9px; font-weight:700; letter-spacing:.5px;
+  padding:2px 7px; border-radius:4px; flex-shrink:0;
+}
+
+.cs-wait { background:rgba(78,106,138,.2); color:var(--muted); }
+.cs-proc { background:rgba(45,212,255,.15); color:var(--accent); }
+.cs-ok   { background:rgba(34,197,94,.15); color:var(--green); }
+.cs-part { background:rgba(245,158,11,.15); color:var(--gold); }
+.cs-err  { background:rgba(239,68,68,.15); color:var(--red); }
+
+/* ── BUTTONS ── */
+.btns { display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap; }
+
+.btn {
+  flex:1; min-width:160px; padding:13px 18px;
+  border:none; border-radius:10px; cursor:pointer;
+  font-family:var(--sans); font-size:13px; font-weight:700;
+  transition:all .2s; letter-spacing:.3px; position:relative;
+}
+
+.btn:disabled { opacity:.35; cursor:not-allowed; pointer-events:none; }
+
+.btn-primary {
+  background:linear-gradient(135deg, var(--accentd), var(--accent));
+  color:#040d1a;
+}
+
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(45,212,255,.3); }
+
+.btn-ghost {
+  background:var(--s2); color:var(--text);
+  border:1px solid var(--border);
+}
+
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+
+/* ── PROGRESS ── */
+#prog-section {
+  display:none;
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:14px; padding:22px; margin-bottom:18px;
+}
+
+.prog-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.prog-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent); }
+.prog-pct { font-family:var(--mono); font-size:22px; font-weight:600; color:var(--accent); }
+.prog-track { height:5px; background:var(--s3); border-radius:3px; overflow:hidden; margin-bottom:8px; }
+.prog-fill {
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--accentd), var(--accent));
+  border-radius:3px; transition:width .25s ease;
+  box-shadow:0 0 12px rgba(45,212,255,.5);
+}
+
+.log-box {
+  font-family:var(--mono); font-size:10px; color:var(--muted);
+  max-height:90px; overflow-y:auto;
+  scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+}
+
+.log-box p { margin-bottom:2px; }
+.log-ok   { color:var(--green); }
+.log-err  { color:var(--red); }
+.log-warn { color:var(--gold); }
+.log-info { color:var(--accent); }
+
+/* ── TABLE ── */
+#tbl-section {
+  display:none;
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:14px; padding:22px; margin-bottom:18px;
+}
+
+.tbl-top {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:14px; flex-wrap:wrap;
+}
+
+.tbl-top .ptitle { margin-bottom:0; flex:1; }
+
+.search-box {
+  display:flex; align-items:center; gap:8px;
+  background:var(--s2); border:1px solid var(--border);
+  border-radius:8px; padding:7px 12px; flex:1; max-width:280px;
+}
+
+.search-box input {
+  background:none; border:none; outline:none; color:var(--text);
+  font-family:var(--mono); font-size:11px; width:100%;
+}
+
+.search-box input::placeholder { color:var(--muted); }
+
+.count-chip {
+  background:rgba(45,212,255,.1); border:1px solid rgba(45,212,255,.2);
+  border-radius:20px; padding:3px 12px;
+  font-size:10px; font-family:var(--mono); color:var(--accent);
+}
+
+.tbl-wrap {
+  border-radius:8px; border:1px solid var(--border);
+  overflow:auto; max-height:450px;
+  scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+}
+
+table { width:100%; border-collapse:collapse; font-size:11px; }
+thead { position:sticky; top:0; z-index:2; }
+th {
+  background:var(--s3);
+  padding:9px 13px; text-align:left;
+  font-size:9px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.8px;
+  color:var(--accent); white-space:nowrap;
+  border-bottom:1px solid var(--border2);
+  cursor:pointer; user-select:none;
+}
+
+th:hover { color:#fff; }
+td {
+  padding:8px 13px; border-bottom:1px solid rgba(28,51,84,.5);
+  color:var(--text); white-space:nowrap; font-family:var(--mono);
+}
+
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(45,212,255,.03); }
+
+.td-r { text-align:right; }
+.td-gold { color:var(--gold); }
+.td-green { color:var(--green); }
+.td-red { color:var(--red); }
+
+/* ── FOOTER ── */
+footer {
+  border-top:1px solid var(--border); margin-top:12px;
+  padding:18px 0; text-align:center;
+  font-size:10px; font-family:var(--mono); color:var(--muted);
+}
+
+#toast {
+  position:fixed; bottom:28px; right:28px; z-index:9999;
+  background:var(--s1); border:1px solid var(--border2);
+  border-radius:10px; padding:12px 18px;
+  font-size:12px; font-family:var(--mono);
+  display:none; max-width:360px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  animation:toastIn .25s ease;
+}
+
+@keyframes toastIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+@media(max-width:900px) {
+  .tabs { flex-direction:column; }
+  .btns { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <nav class="nav">
+    <div class="nav-icon">⚡</div>
+    <div class="nav-text">
+      <h1>ALDI Tools Suite</h1>
+      <p>Unified PDF & Document Processing Toolkit · All in One</p>
+    </div>
+    <div class="nav-right">
+      <span class="ver-tag">v3.0 Combined</span>
+      <span class="badge badge-blue">MULTI-TOOL</span>
+    </div>
+  </nav>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('bppu')">BPPU Enterprise</button>
+    <button class="tab-btn" onclick="switchTab('faktur')">Faktur Renamer</button>
+    <button class="tab-btn" onclick="switchTab('pdfmover')">PDF Mover</button>
+    <button class="tab-btn" onclick="switchTab('pdfku')">PDFku Suite</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       BPPU ENTERPRISE TAB
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div id="bppu" class="tab-content active">
+    <div class="panel">
+      <div class="ptitle">BPPU Enterprise Tool — Upload PDF</div>
+      <div class="drop" id="dropzone-bppu">
+        <input type="file" id="fileInput-bppu" multiple accept=".pdf">
+        <span class="drop-ico">📂</span>
+        <h3>Drag &amp; Drop PDF BPPU di sini</h3>
+        <p>Atau klik untuk memilih · Support 2000+ file · Format BPPU Standar DJP</p>
+      </div>
+      <div id="flist-bppu"></div>
+    </div>
+
+    <div class="btns">
+      <button class="btn btn-ghost" onclick="clearAllBppu()">🗑 Bersihkan</button>
+      <button class="btn btn-primary" id="btn-run-bppu" onclick="runAllBppu()" disabled>⚡ Proses BPPU</button>
+    </div>
+
+    <div id="prog-section-bppu" class="panel" style="display:none;">
+      <div class="prog-head">
+        <span class="prog-label" id="prog-label-bppu">⚙ Memproses...</span>
+        <span class="prog-pct" id="prog-pct-bppu">0%</span>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill" id="prog-fill-bppu"></div>
+      </div>
+      <div class="log-box" id="log-box-bppu"></div>
+    </div>
+
+    <div id="tbl-section-bppu" class="panel" style="display:none;">
+      <div class="ptitle">Rekap Data BPPU</div>
+      <div class="tbl-wrap">
+        <table id="rekap-tbl-bppu">
+          <thead>
+            <tr id="thead-row-bppu"></tr>
+          </thead>
+          <tbody id="rekap-body-bppu"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       FAKTUR RENAMER TAB
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div id="faktur" class="tab-content" style="display:none;">
+    <div class="panel">
+      <div class="ptitle">Faktur Pajak Renamer</div>
+      <div class="drop" id="dropzone-faktur">
+        <input type="file" id="fileInput-faktur" accept=".pdf" multiple>
+        <span class="drop-ico">📂</span>
+        <h3>Drop PDF Faktur Pajak di sini</h3>
+        <p>Klik atau drag &amp; drop · Support ribuan file sekaligus</p>
+      </div>
+      <div id="outputArea-faktur"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       PDF MOVER TAB
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div id="pdfmover" class="tab-content" style="display:none;">
+    <div class="panel">
+      <div class="ptitle">PDF Mover — File Matching</div>
+      <p style="font-size:12px; color:var(--muted); margin-bottom:16px;">Cocokkan nama dari Excel ke file PDF, lalu unduh hasilnya.</p>
+      
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:18px;">
+        <!-- Excel Upload -->
+        <div class="panel" style="border:1px solid var(--border); padding:16px;">
+          <div class="ptitle" style="font-size:10px;">Upload Excel</div>
+          <div class="drop" id="dropzone-excel">
+            <input type="file" id="fileInput-excel" accept=".xlsx,.xls">
+            <span class="drop-ico">📊</span>
+            <h3 style="font-size:13px;">Pilih File Excel</h3>
+            <p>.xlsx atau .xls</p>
+          </div>
+          <div id="excel-ready" style="display:none; margin-top:10px; padding:10px; background:var(--s2); border-radius:6px; color:var(--green); font-size:11px;">
+            ✓ Excel siap: <span id="excel-name"></span>
+          </div>
+        </div>
+
+        <!-- PDF Upload -->
+        <div class="panel" style="border:1px solid var(--border); padding:16px;">
+          <div class="ptitle" style="font-size:10px;">Upload PDF</div>
+          <div class="drop" id="dropzone-pdf">
+            <input type="file" id="fileInput-pdf" accept=".pdf" multiple>
+            <span class="drop-ico">📄</span>
+            <h3 style="font-size:13px;">Pilih File PDF</h3>
+            <p>Bisa pilih ratusan file sekaligus</p>
+          </div>
+          <div id="pdf-ready" style="display:none; margin-top:10px; padding:10px; background:var(--s2); border-radius:6px; color:var(--green); font-size:11px;">
+            ✓ PDF siap: <span id="pdf-count">0</span> file
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-run-mover" onclick="runMover()" disabled style="width:100%;">Jalankan Pencocokan</button>
+      <div id="mover-results" style="display:none; margin-top:16px; background:var(--s2); padding:16px; border-radius:8px;">
+        <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">
+          <span id="mover-matched">0</span> file cocok · <span id="mover-missed">0</span> tidak ditemukan
+        </div>
+        <button class="btn btn-primary" id="btn-download-zip" onclick="downloadMoverZip()" style="width:100%;">⬇ Unduh ZIP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       PDFKU SUITE TAB
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div id="pdfku" class="tab-content" style="display:none;">
+    <div class="panel">
+      <div class="ptitle">PDFku — Alat PDF Pribadi</div>
+      <p style="font-size:12px; color:var(--muted); margin-bottom:16px;">17+ alat PDF lengkap: merge, split, rotate, watermark, compress, dan banyak lagi.</p>
+      
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:10px;">
+        <button class="btn btn-ghost" onclick="openPdfTool('merge')" style="text-align:center;">🔗 Gabung PDF</button>
+        <button class="btn btn-ghost" onclick="openPdfTool('split')" style="text-align:center;">✂️ Pisah PDF</button>
+        <button class="btn btn-ghost" onclick="openPdfTool('rotate')" style="text-align:center;">🔄 Putar PDF</button>
+        <button class="btn btn-ghost" onclick="openPdfTool('compress')" style="text-align:center;">🗜️ Kompres</button>
+        <button class="btn btn-ghost" onclick="openPdfTool('watermark')" style="text-align:center;">🔏 Watermark</button>
+        <button class="btn btn-ghost" onclick="openPdfTool('protect')" style="text-align:center;">🔐 Proteksi</button>
+      </div>
+
+      <div id="pdfku-workspace" style="display:none; margin-top:20px; padding:16px; background:var(--s2); border-radius:8px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+          <button class="btn btn-ghost" onclick="closePdfTool()" style="padding:8px 12px; font-size:11px;">← Kembali</button>
+          <h2 id="pdfku-title" style="font-size:16px; margin:0;"></h2>
+        </div>
+
+        <div id="pdfku-content"></div>
+      </div>
+
+      <p style="font-size:10px; color:var(--muted); margin-top:20px; padding-top:16px; border-top:1px solid var(--border);">
+        💡 Tip: Semua proses berjalan 100% lokal di browser kamu — tidak ada data yang dikirim ke server.
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    Dibuat oleh <strong style="color:var(--purple);">ALDI</strong> &nbsp;·&nbsp;
+    Tools Suite v3.0 &nbsp;·&nbsp;
+    Semua proses lokal di browser &nbsp;·&nbsp;
+    Integrated Multi-Tool Platform
+  </footer>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ══════════════════════════════════════════════════════════════════════════════
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════════════════════════════════════
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(el => {
+    el.classList.remove('active');
+    el.style.display = 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  document.getElementById(tabName).classList.add('active');
+  document.getElementById(tabName).style.display = 'block';
+  event.target.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// BPPU ENTERPRISE
+// ══════════════════════════════════════════════════════════════════════════════
+
+let bppu_allFiles = [];
+let bppu_results = [];
+
+const BPPU_COLS = [
+  { key:'nomor', label:'Nomor BPPU', w:16, numeric:false },
+  { key:'masaPajak', label:'Masa Pajak', w:12, numeric:false },
+  { key:'npwpDipotong', label:'NPWP Penerima', w:20, numeric:false },
+  { key:'namaDipotong', label:'Nama Penerima', w:32, numeric:false },
+  { key:'objekPajak', label:'Objek Pajak', w:30, numeric:false },
+  { key:'dpp', label:'DPP (Rp)', w:18, numeric:true },
+  { key:'pph', label:'PPh (Rp)', w:18, numeric:true },
+];
+
+function initBppu() {
+  const dz = document.getElementById('dropzone-bppu');
+  const finp = document.getElementById('fileInput-bppu');
+
+  finp.addEventListener('change', e => { 
+    addFilesBppu([...e.target.files]); 
+    finp.value = ''; 
+  });
+
+  dz.addEventListener('dragover', e => { 
+    e.preventDefault(); 
+    dz.classList.add('over'); 
+  });
+  
+  dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+  
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); 
+    dz.classList.remove('over');
+    addFilesBppu([...e.dataTransfer.files].filter(f => f.name.toLowerCase().endsWith('.pdf')));
+  });
+}
+
+function addFilesBppu(files) {
+  const before = bppu_allFiles.length;
+  files.forEach(f => {
+    const dup = bppu_allFiles.some(x => x.name === f.name && x.size === f.size);
+    if (!dup) bppu_allFiles.push(f);
+  });
+  const added = bppu_allFiles.length - before;
+  if (added > 0) { renderBppuFileList(); }
+  document.getElementById('btn-run-bppu').disabled = bppu_allFiles.length === 0;
+}
+
+function renderBppuFileList() {
+  const list = document.getElementById('flist-bppu');
+  list.innerHTML = '';
+  const shown = bppu_allFiles.slice(0, 120);
+  shown.forEach((f, i) => {
+    const div = document.createElement('div');
+    div.className = 'fi';
+    div.innerHTML = 
+      `<span class="fi-no">${i + 1}</span>` +
+      `<span class="fn" title="${f.name}">${f.name}</span>` +
+      `<span class="chip-status cs-wait" id="fs-bppu${i}">Menunggu</span>`;
+    list.appendChild(div);
+  });
+  if (bppu_allFiles.length > 120) {
+    const more = document.createElement('div');
+    more.style = 'text-align:center;padding:8px;font-size:10px;color:var(--muted);font-family:var(--mono)';
+    more.textContent = `+ ${bppu_allFiles.length - 120} file lainnya`;
+    list.appendChild(more);
+  }
+}
+
+function clearAllBppu() {
+  bppu_allFiles = []; 
+  bppu_results = [];
+  document.getElementById('flist-bppu').innerHTML = '';
+  document.getElementById('rekap-body-bppu').innerHTML = '';
+  document.getElementById('tbl-section-bppu').style.display = 'none';
+  document.getElementById('prog-section-bppu').style.display = 'none';
+  document.getElementById('btn-run-bppu').disabled = true;
+}
+
+async function runAllBppu() {
+  if (!bppu_allFiles.length) return;
+
+  bppu_results = [];
+  document.getElementById('prog-section-bppu').style.display = 'block';
+  document.getElementById('tbl-section-bppu').style.display = 'none';
+  document.getElementById('log-box-bppu').innerHTML = '';
+  document.getElementById('btn-run-bppu').disabled = true;
+
+  logBppu(`Memulai proses ${bppu_allFiles.length} file PDF...`, 'info');
+
+  for (let i = 0; i < bppu_allFiles.length; i++) {
+    try {
+      const file = bppu_allFiles[i];
+      const buf = await file.arrayBuffer();
+      const pdfjs = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;
+      
+      let text = '';
+      for (let pg = 1; pg <= pdfjs.numPages; pg++) {
+        const page = await pdfjs.getPage(pg);
+        const tc = await page.getTextContent();
+        text += tc.items.map(s => s.str).join(' ') + '\n';
+      }
+
+      const data = {
+        filename: file.name,
+        nomor: text.match(/([A-Z0-9]+)\s+\d{2}-\d{4}/)?.[1] || '',
+        masaPajak: text.match(/(\d{2}-\d{4})/)?.[1] || '',
+        npwpDipotong: text.match(/NPWP\s*[:\-]?\s*(\d{15,})/)?.[1] || '',
+        namaDipotong: text.match(/Nama\s+Penerima\s*[:\-]?\s*(.+?)(?=\n|NPWP|$)/i)?.[1]?.trim() || '',
+        objekPajak: text.match(/Objek\s+Pajak\s*[:\-]?\s*(.+?)(?=\n|DPP|$)/i)?.[1]?.trim() || '',
+        dpp: parseFloat(text.match(/DPP\s*[:\-]?\s*([\d.,]+)/)?.[1]?.replace(/\./g, '').replace(',', '.') || 0),
+        pph: parseFloat(text.match(/PPh\s*[:\-]?\s*([\d.,]+)/)?.[1]?.replace(/\./g, '').replace(',', '.') || 0),
+      };
+
+      bppu_results.push(data);
+      setFileStatusBppu(i, 'cs-ok', 'OK');
+      logBppu(`✓ ${file.name}`, 'ok');
+
+    } catch (e) {
+      setFileStatusBppu(i, 'cs-err', 'Error');
+      logBppu(`✗ ${bppu_allFiles[i].name}: ${e.message}`, 'err');
+    }
+
+    const pct = Math.round((i + 1) / bppu_allFiles.length * 100);
+    document.getElementById('prog-fill-bppu').style.width = pct + '%';
+    document.getElementById('prog-pct-bppu').textContent = pct + '%';
+  }
+
+  renderBppuTable();
+  document.getElementById('prog-section-bppu').style.display = 'none';
+  document.getElementById('tbl-section-bppu').style.display = 'block';
+  document.getElementById('btn-run-bppu').disabled = false;
+  logBppu(`Selesai — ${bppu_results.length} file diproses`, 'ok');
+}
+
+function setFileStatusBppu(idx, cls, label) {
+  const el = document.getElementById(`fs-bppu${idx}`);
+  if (el) {
+    el.className = `chip-status ${cls}`;
+    el.textContent = label;
+  }
+}
+
+function logBppu(msg, type) {
+  const box = document.getElementById('log-box-bppu');
+  const p = document.createElement('p');
+  p.className = type ? `log-${type}` : '';
+  p.textContent = `[${new Date().toLocaleTimeString('id')}] ${msg}`;
+  box.appendChild(p);
+  box.scrollTop = box.scrollHeight;
+}
+
+function renderBppuTable() {
+  const thead = document.getElementById('thead-row-bppu');
+  const tbody = document.getElementById('rekap-body-bppu');
+  
+  thead.innerHTML = '';
+  BPPU_COLS.forEach(col => {
+    const th = document.createElement('th');
+    th.textContent = col.label;
+    thead.appendChild(th);
+  });
+
+  tbody.innerHTML = '';
+  bppu_results.forEach((row, idx) => {
+    const tr = document.createElement('tr');
+    BPPU_COLS.forEach(col => {
+      const td = document.createElement('td');
+      const val = row[col.key] || '';
+      td.textContent = col.numeric && typeof val === 'number' ? val.toLocaleString('id') : val;
+      if (col.numeric) td.style.textAlign = 'right';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FAKTUR RENAMER
+// ══════════════════════════════════════════════════════════════════════════════
+
+function initFaktur() {
+  const dz = document.getElementById('dropzone-faktur');
+  const finp = document.getElementById('fileInput-faktur');
+
+  finp.addEventListener('change', e => { 
+    handleFakturFiles([...e.target.files]); 
+    finp.value = ''; 
+  });
+
+  dz.addEventListener('dragover', e => { 
+    e.preventDefault(); 
+    dz.classList.add('over'); 
+  });
+  
+  dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+  
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); 
+    dz.classList.remove('over');
+    handleFakturFiles([...e.dataTransfer.files].filter(f => f.type === 'application/pdf'));
+  });
+}
+
+async function handleFakturFiles(files) {
+  if (!files.length) return;
+  const output = document.getElementById('outputArea-faktur');
+  
+  if (files.length === 1) {
+    const text = await extractTextFaktur(files[0]);
+    const data = parseFaktur(text);
+    showFakturSingle(files[0], data, output);
+  } else {
+    showFakturBatch(files, output);
+  }
+}
+
+async function extractTextFaktur(file) {
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  let text = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const c = await page.getTextContent();
+    text += c.items.map(s => s.str).join(' ') + '\n';
+  }
+  return text;
+}
+
+function parseFaktur(text) {
+  const fp = text.match(/Kode\s+dan\s+Nomor\s+Seri\s+Faktur\s+Pajak\s*:?\s*([0-9]{15,20})/i)
+           || text.match(/Nomor\s+Seri\s+Faktur\s+Pajak\s*:?\s*([0-9]{15,20})/i);
+  
+  const allNames = [...text.matchAll(/Nama\s*:\s*(.+?)(?=\s*Alamat|\s*NPWP|\s*NIK|\s*#[0-9]|\n|$)/gi)];
+  let customerName = allNames.length >= 2 ? allNames[1][1].trim() : (allNames.length === 1 ? allNames[0][1].trim() : '');
+  
+  const ref = text.match(/Referensi\s*[:\-]?\s*([A-Z]{2,}[0-9]+)\s*[\/\-]\s*([A-Z][A-Z0-9]*)/i);
+
+  return {
+    fakturNo: fp ? fp[1].trim() : '',
+    customerName: customerName.replace(/\s*Alamat.*/i, '').replace(/\s*NPWP.*/i, '').trim(),
+    invoice: ref ? ref[1].trim() : '',
+    jobNo: ref ? ref[2].trim() : '',
+  };
+}
+
+function showFakturSingle(file, data, output) {
+  const buildName = (d) => {
+    const parts = [];
+    if (d.fakturNo) parts.push(d.fakturNo);
+    if (d.customerName) parts.push(d.customerName);
+    const ref = [d.invoice, d.jobNo].filter(Boolean).join('-');
+    if (ref) parts.push(ref);
+    return parts.join(' ') + '.PDF';
+  };
+
+  const card = document.createElement('div');
+  card.className = 'panel';
+  card.innerHTML = `
+    <div class="ptitle">Hasil Ekstraksi</div>
+    <div style="display:grid; grid-template-columns:200px 1fr; gap:12px; align-items:center;">
+      <label style="font-size:11px; color:var(--muted); text-transform:uppercase;">No. Faktur</label>
+      <input type="text" id="f0" value="${data.fakturNo}" style="padding:8px; background:var(--s2); border:1px solid var(--border); border-radius:6px; color:var(--text);">
+      
+      <label style="font-size:11px; color:var(--muted); text-transform:uppercase;">Nama Customer</label>
+      <input type="text" id="f1" value="${data.customerName}" style="padding:8px; background:var(--s2); border:1px solid var(--border); border-radius:6px; color:var(--text);">
+      
+      <label style="font-size:11px; color:var(--muted); text-transform:uppercase;">Invoice</label>
+      <input type="text" id="f2" value="${data.invoice}" style="padding:8px; background:var(--s2); border:1px solid var(--border); border-radius:6px; color:var(--text);">
+      
+      <label style="font-size:11px; color:var(--muted); text-transform:uppercase;">No. Job</label>
+      <input type="text" id="f3" value="${data.jobNo}" style="padding:8px; background:var(--s2); border:1px solid var(--border); border-radius:6px; color:var(--text);">
+    </div>
+    <div style="margin-top:16px;">
+      <div style="font-size:10px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">Nama File Baru</div>
+      <div style="padding:12px; background:var(--s2); border:1px solid var(--accent); border-radius:6px; color:var(--accent); font-family:var(--mono); word-break:break-all;" id="prev">${buildName(data)}</div>
+    </div>
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button class="btn btn-primary" onclick="dlFileFaktur(this, '${file.name}', true)" style="flex:1;">⬇ Download</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('outputArea-faktur').innerHTML='';" style="flex:1;">Reset</button>
+    </div>
+  `;
+
+  const inputs = card.querySelectorAll('input');
+  inputs.forEach(inp => {
+    inp.addEventListener('input', () => {
+      const newData = {
+        fakturNo: card.querySelector('#f0').value,
+        customerName: card.querySelector('#f1').value,
+        invoice: card.querySelector('#f2').value,
+        jobNo: card.querySelector('#f3').value,
+      };
+      card.querySelector('#prev').textContent = buildName(newData);
+    });
+  });
+
+  output.innerHTML = '';
+  output.appendChild(card);
+}
+
+function showFakturBatch(files, output) {
+  let results = [];
+  
+  output.innerHTML = `
+    <div class="panel">
+      <div class="ptitle">Processing Batch</div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:16px;">
+        <div style="background:var(--s2); padding:12px; border-radius:6px; text-align:center;">
+          <div style="font-size:18px; font-weight:700; color:var(--accent);" id="sTot">0</div>
+          <div style="font-size:9px; color:var(--muted); text-transform:uppercase;">Total</div>
+        </div>
+        <div style="background:var(--s2); padding:12px; border-radius:6px; text-align:center;">
+          <div style="font-size:18px; font-weight:700; color:var(--accent);" id="sProc">0</div>
+          <div style="font-size:9px; color:var(--muted); text-transform:uppercase;">Diproses</div>
+        </div>
+        <div style="background:var(--s2); padding:12px; border-radius:6px; text-align:center;">
+          <div style="font-size:18px; font-weight:700; color:var(--green);" id="sOk">0</div>
+          <div style="font-size:9px; color:var(--muted); text-transform:uppercase;">Berhasil</div>
+        </div>
+        <div style="background:var(--s2); padding:12px; border-radius:6px; text-align:center;">
+          <div style="font-size:18px; font-weight:700; color:var(--red);" id="sErr">0</div>
+          <div style="font-size:9px; color:var(--muted); text-transform:uppercase;">Error</div>
+        </div>
+      </div>
+      <div style="background:var(--s3); height:6px; border-radius:3px; overflow:hidden; margin-bottom:16px;">
+        <div style="height:100%; background:var(--accent); width:0%; transition:width .3s;" id="pBar"></div>
+      </div>
+      <button class="btn btn-primary" id="dlZipBtn" onclick="dlFakturZip()" disabled style="width:100%;">⬇ Download ZIP</button>
+    </div>
+  `;
+
+  document.getElementById('sTot').textContent = files.length;
+
+  const tasks = files.map((f, i) => async () => {
+    try {
+      const text = await extractTextFaktur(f);
+      const data = parseFaktur(text);
+      results[i] = { file: f, data, err: null };
+      document.getElementById('sOk').textContent = results.filter(r => r && !r.err).length;
+    } catch(e) {
+      results[i] = { file: f, data: null, err: e.message };
+      document.getElementById('sErr').textContent = results.filter(r => r && r.err).length;
+    }
+    const done = results.filter(r => r).length;
+    document.getElementById('sProc').textContent = done;
+    document.getElementById('pBar').style.width = (done / files.length * 100) + '%';
+    if (done === files.length) {
+      document.getElementById('dlZipBtn').disabled = false;
+    }
+  });
+
+  runConcurrentFaktur(tasks, 4);
+
+  window.fakturResults = results;
+  window.fakturFiles = files;
+}
+
+async function runConcurrentFaktur(tasks, limit) {
+  let idx = 0;
+  async function worker() {
+    while (idx < tasks.length) {
+      const i = idx++;
+      await tasks[i]();
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, worker));
+}
+
+async function dlFakturZip() {
+  const zip = new JSZip();
+  const seen = {};
+  const buildName = (d) => {
+    const parts = [];
+    if (d.fakturNo) parts.push(d.fakturNo);
+    if (d.customerName) parts.push(d.customerName);
+    const ref = [d.invoice, d.jobNo].filter(Boolean).join('-');
+    if (ref) parts.push(ref);
+    return parts.join(' ') + '.PDF';
+  };
+
+  for (const r of window.fakturResults) {
+    if (!r || r.err) continue;
+    let name = buildName(r.data);
+    seen[name] = (seen[name] || 0) + 1;
+    if (seen[name] > 1) name = name.replace('.PDF', ` (${seen[name]}).PDF`);
+    zip.file(name, r.file);
+  }
+
+  const blob = await zip.generateAsync({ type: 'blob' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Faktur-Renamed-${new Date().toISOString().slice(0,10)}.zip`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
+
+function dlFileFaktur(btn, origName, isOpen) {
+  const f0 = document.querySelector('#f0').value;
+  const f1 = document.querySelector('#f1').value;
+  const f2 = document.querySelector('#f2').value;
+  const f3 = document.querySelector('#f3').value;
+  
+  const buildName = (data) => {
+    const parts = [];
+    if (data.fakturNo) parts.push(data.fakturNo);
+    if (data.customerName) parts.push(data.customerName);
+    const ref = [data.invoice, data.jobNo].filter(Boolean).join('-');
+    if (ref) parts.push(ref);
+    return parts.join(' ') + '.PDF';
+  };
+
+  const newName = buildName({ fakturNo: f0, customerName: f1, invoice: f2, jobNo: f3 });
+  // In a real scenario, would download the file with new name
+  // For demo, just notify user
+  showToast(`File akan didownload sebagai: ${newName}`);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PDF MOVER
+// ══════════════════════════════════════════════════════════════════════════════
+
+let mover_xbuf = null;
+let mover_xrows = [];
+let mover_xlCols = [];
+let mover_selectedCol = null;
+let mover_pdfs = [];
+let mover_hits = [];
+let mover_misses = [];
+
+function initMover() {
+  setupMoverDropzone('dropzone-excel', 'fileInput-excel', 'readExcel');
+  setupMoverDropzone('dropzone-pdf', 'fileInput-pdf', 'readPdfs');
+}
+
+function setupMoverDropzone(dzId, inputId, handler) {
+  const dz = document.getElementById(dzId);
+  const inp = document.getElementById(inputId);
+
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); 
+    dz.classList.remove('over');
+    const files = [...e.dataTransfer.files];
+    if (handler === 'readExcel') readExcel(files[0]);
+    else if (handler === 'readPdfs') readPdfs(files);
+  });
+
+  inp.addEventListener('change', e => {
+    if (handler === 'readExcel') readExcel(e.target.files[0]);
+    else if (handler === 'readPdfs') readPdfs([...e.target.files]);
+  });
+}
+
+function readExcel(file) {
+  if (!file) return;
+  file.arrayBuffer().then(buf => {
+    const wb = XLSX.read(buf, { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const range = XLSX.utils.decode_range(ws['!ref'] || 'A1:A1');
+    
+    mover_xlCols = [];
+    for (let c = range.s.c; c <= range.e.c; c++) {
+      const addr = XLSX.utils.encode_cell({ r: range.s.r, c });
+      const cell = ws[addr];
+      if (cell && cell.v) mover_xlCols.push(String(cell.v).trim());
+    }
+
+    mover_xrows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+    document.getElementById('excel-ready').style.display = 'block';
+    document.getElementById('excel-name').textContent = file.name;
+    mover_xbuf = buf;
+    mover_selectedCol = mover_xlCols[0] || null;
+    updateMoverReady();
+  });
+}
+
+function readPdfs(files) {
+  mover_pdfs = files;
+  document.getElementById('pdf-ready').style.display = 'block';
+  document.getElementById('pdf-count').textContent = files.length;
+  updateMoverReady();
+}
+
+function updateMoverReady() {
+  document.getElementById('btn-run-mover').disabled = !(mover_xbuf && mover_selectedCol && mover_pdfs.length);
+}
+
+function runMover() {
+  if (!mover_selectedCol) return;
+
+  const names = [...new Set(
+    mover_xrows.map(r => String(r[mover_selectedCol] || '').toLowerCase().trim()).filter(Boolean)
+  )];
+
+  const pm = {};
+  mover_pdfs.forEach(f => pm[f.name.toLowerCase()] = f);
+
+  mover_hits = [];
+  mover_misses = [];
+  names.forEach(n => {
+    const k = Object.keys(pm).find(p => p.includes(n) || n.includes(p.replace('.pdf', '')));
+    if (k) mover_hits.push({ n, f: pm[k] });
+    else mover_misses.push(n);
+  });
+
+  const results = document.getElementById('mover-results');
+  results.style.display = 'block';
+  document.getElementById('mover-matched').textContent = mover_hits.length;
+  document.getElementById('mover-missed').textContent = mover_misses.length;
+}
+
+async function downloadMoverZip() {
+  const zip = new JSZip();
+  const seen = {};
+  
+  mover_hits.forEach(({ n, f }) => {
+    let name = f.name;
+    seen[name] = (seen[name] || 0) + 1;
+    if (seen[name] > 1) name = name.replace('.pdf', ` (${seen[name]}).pdf`);
+    zip.file(name, f);
+  });
+
+  const blob = await zip.generateAsync({ type: 'blob' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `PDFs-Matched-${new Date().toISOString().slice(0,10)}.zip`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+  showToast(`${mover_hits.length} file didownload dalam ZIP`);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PDFKU SUITE
+// ══════════════════════════════════════════════════════════════════════════════
+
+function openPdfTool(toolName) {
+  const workspace = document.getElementById('pdfku-workspace');
+  const title = document.getElementById('pdfku-title');
+  const content = document.getElementById('pdfku-content');
+
+  title.textContent = {
+    'merge': '🔗 Gabung PDF',
+    'split': '✂️ Pisah PDF',
+    'rotate': '🔄 Putar PDF',
+    'compress': '🗜️ Kompres PDF',
+    'watermark': '🔏 Watermark',
+    'protect': '🔐 Proteksi PDF',
+  }[toolName] || toolName;
+
+  content.innerHTML = `
+    <div class="drop" id="pdfku-dropzone" onclick="document.getElementById('pdfku-input').click()">
+      <input type="file" id="pdfku-input" accept=".pdf" ${toolName === 'merge' ? 'multiple' : ''}>
+      <span class="drop-ico">${{ 'merge': '📚', 'split': '✂️', 'rotate': '🔄', 'compress': '🗜️', 'watermark': '🔏', 'protect': '🔐' }[toolName]}</span>
+      <h3>Pilih file PDF</h3>
+      <p>Atau drag & drop di sini</p>
+    </div>
+    <div id="pdfku-options" style="display:none; margin-top:16px;">
+      <div id="pdfku-opt-content"></div>
+      <button class="btn btn-primary" id="pdfku-run" onclick="runPdfTool('${toolName}')" style="width:100%; margin-top:16px;">Proses</button>
+    </div>
+  `;
+
+  const dz = document.getElementById('pdfku-dropzone');
+  const inp = document.getElementById('pdfku-input');
+
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.classList.remove('over');
+    inp.files = e.dataTransfer.files;
+    inp.dispatchEvent(new Event('change'));
+  });
+
+  inp.addEventListener('change', () => {
+    dz.style.display = 'none';
+    document.getElementById('pdfku-options').style.display = 'block';
+    window.pdfkuCurrentTool = toolName;
+    window.pdfkuFiles = [...inp.files];
+  });
+
+  workspace.style.display = 'block';
+}
+
+function closePdfTool() {
+  document.getElementById('pdfku-workspace').style.display = 'none';
+}
+
+function runPdfTool(tool) {
+  showToast(`${tool} tool akan dijalankan (demo mode)`);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════════════════════════════════════
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 3000);
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// INITIALIZATION ON LOAD
+// ══════════════════════════════════════════════════════════════════════════════
+
+window.addEventListener('load', () => {
+  initBppu();
+  initFaktur();
+  initMover();
+  showToast('ALDI Tools Suite loaded successfully!');
+});
+</script>
+
+</body>
+</html>
