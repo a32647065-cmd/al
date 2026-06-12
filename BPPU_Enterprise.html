@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPPU Enterprise — DJP PPh Unifikasi | by ALDI</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg:       #070d1a;
+  --s1:       #0d1526;
+  --s2:       #111d30;
+  --s3:       #16243a;
+  --border:   #1c3354;
+  --border2:  #254570;
+  --accent:   #2dd4ff;
+  --accentd:  #0ea5c9;
+  --gold:     #f59e0b;
+  --green:    #22c55e;
+  --red:      #ef4444;
+  --purple:   #a78bfa;
+  --text:     #e2eaf6;
+  --muted:    #4e6a8a;
+  --mono:     'IBM Plex Mono', monospace;
+  --sans:     'Plus Jakarta Sans', sans-serif;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Grid bg ── */
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    linear-gradient(rgba(45,212,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45,212,255,.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ── Glow orbs ── */
+body::after {
+  content:'';
+  position:fixed; pointer-events:none; z-index:0;
+  width:600px; height:600px;
+  top:-100px; left:-150px;
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(45,212,255,.06) 0%, transparent 70%);
+}
+
+.wrap { max-width:1280px; margin:0 auto; padding:28px 24px; position:relative; z-index:1; }
+
+/* ════════════════════════════════
+   HEADER
+════════════════════════════════ */
+.hdr {
+  display:flex; align-items:center; gap:18px;
+  background: var(--s1);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:22px 28px;
+  margin-bottom:24px;
+  position:relative; overflow:hidden;
+}
+.hdr::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 40%, var(--accentd) 60%, transparent 100%);
+}
+.hdr-icon {
+  width:52px; height:52px; flex-shrink:0;
+  background: linear-gradient(135deg, #0a3d6b, #1a6eb5);
+  border:1px solid var(--border2);
+  border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px;
+  box-shadow: 0 0 24px rgba(45,212,255,.2);
+}
+.hdr-text h1 {
+  font-size:20px; font-weight:800; color:var(--accent); letter-spacing:-.3px;
+}
+.hdr-text p {
+  font-size:11px; color:var(--muted); font-family:var(--mono); margin-top:3px;
+}
+.hdr-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+.badge {
+  padding:5px 12px; border-radius:6px; font-size:10px;
+  font-weight:700; letter-spacing:1.2px;
+}
+.badge-red  { background:#7f1d1d; color:#fca5a5; border:1px solid #991b1b; }
+.badge-blue { background:#1e3a5f; color:var(--accent); border:1px solid var(--border2); font-family:var(--mono); }
+.ver-tag {
+  font-family:var(--mono); font-size:10px; color:var(--green);
+  background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.25);
+  padding:4px 10px; border-radius:20px;
+}
+.aldi-tag {
+  display:inline-flex; align-items:center; gap:7px;
+  background:linear-gradient(135deg, #1a0a3d, #2d1b69);
+  border:1px solid #7c3aed;
+  border-radius:8px; padding:5px 14px;
+  font-family:var(--mono); font-size:11px; font-weight:700;
+  color:#a78bfa; letter-spacing:.8px;
+  box-shadow: 0 0 16px rgba(124,58,237,.25);
+  position:relative; overflow:hidden;
+}
+.aldi-tag::before {
+  content:'';
+  position:absolute; top:0; left:-100%; width:60%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(167,139,250,.15),transparent);
+  animation:aldi-shine 3s infinite;
+}
+@keyframes aldi-shine {
+  0%{left:-100%} 100%{left:200%}
+}
+.aldi-tag .aldi-icon { font-size:13px; }
+.aldi-tag .aldi-name { color:#c4b5fd; }
+.aldi-tag .aldi-sep  { color:#6d28d9; }
+/* Fixed watermark bottom-right */
+.watermark {
+  position:fixed; bottom:16px; right:20px; z-index:9998;
+  display:flex; align-items:center; gap:6px;
+  background:rgba(13,21,38,.85); border:1px solid rgba(124,58,237,.3);
+  border-radius:8px; padding:5px 12px;
+  font-family:var(--mono); font-size:10px; color:rgba(167,139,250,.6);
+  backdrop-filter:blur(6px);
+  pointer-events:none; user-select:none;
+}
+.watermark span { color:rgba(196,181,253,.8); font-weight:700; }
+
+/* ════════════════════════════════
+   STATS
+════════════════════════════════ */
+.stats { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:20px; }
+.sc {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:12px; padding:16px 18px;
+  cursor:default; transition:border-color .25s;
+  position:relative; overflow:hidden;
+}
+.sc::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+  background:var(--sc-color, var(--accent));
+  opacity:.4; transition:opacity .25s;
+}
+.sc:hover { border-color:var(--border2); }
+.sc:hover::after { opacity:1; }
+.sc .lbl { font-size:10px; font-family:var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:.8px; }
+.sc .val { font-size:24px; font-weight:800; margin-top:6px; color:var(--sc-color, var(--accent)); line-height:1; }
+.sc .sub { font-size:10px; color:var(--muted); font-family:var(--mono); margin-top:4px; }
+
+/* ════════════════════════════════
+   MAIN LAYOUT
+════════════════════════════════ */
+.layout { display:grid; grid-template-columns:1fr 380px; gap:18px; margin-bottom:18px; }
+
+.panel {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:14px; padding:22px;
+}
+.ptitle {
+  font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:1.5px; color:var(--accent);
+  margin-bottom:16px;
+  display:flex; align-items:center; gap:8px;
+}
+.ptitle::before {
+  content:''; width:3px; height:14px;
+  background:var(--accent); border-radius:2px; flex-shrink:0;
+}
+
+/* ── Drop zone ── */
+.drop {
+  border:2px dashed var(--border2);
+  border-radius:10px; padding:36px 20px;
+  text-align:center; cursor:pointer;
+  transition:all .25s; position:relative;
+  background:rgba(45,212,255,.02);
+}
+.drop:hover, .drop.over {
+  border-color:var(--accent);
+  background:rgba(45,212,255,.05);
+  box-shadow:0 0 40px rgba(45,212,255,.08) inset;
+}
+.drop input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.drop-ico { font-size:40px; margin-bottom:10px; display:block; }
+.drop h3 { font-size:14px; font-weight:700; margin-bottom:4px; }
+.drop p  { font-size:11px; color:var(--muted); font-family:var(--mono); }
+
+/* ── File list ── */
+#flist {
+  margin-top:14px; max-height:220px; overflow-y:auto;
+  display:flex; flex-direction:column; gap:5px;
+  scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+}
+.fi {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 11px; background:var(--s2);
+  border-radius:6px; font-size:11px; font-family:var(--mono);
+  animation:sli .15s ease; border:1px solid transparent;
+  transition:border-color .2s;
+}
+.fi:hover { border-color:var(--border); }
+@keyframes sli { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:none} }
+.fi .fn { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text); }
+.fi .fi-no { color:var(--muted); min-width:28px; text-align:right; }
+.chip-status {
+  font-size:9px; font-weight:700; letter-spacing:.5px;
+  padding:2px 7px; border-radius:4px; flex-shrink:0;
+}
+.cs-wait { background:rgba(78,106,138,.2); color:var(--muted); }
+.cs-proc { background:rgba(45,212,255,.15); color:var(--accent); }
+.cs-ok   { background:rgba(34,197,94,.15); color:var(--green); }
+.cs-part { background:rgba(245,158,11,.15); color:var(--gold); }
+.cs-err  { background:rgba(239,68,68,.15); color:var(--red); }
+
+/* ── Options panel ── */
+.opts { display:flex; flex-direction:column; gap:10px; }
+.opt-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:11px 14px; background:var(--s2);
+  border-radius:8px; border:1px solid transparent; transition:border-color .2s;
+}
+.opt-row:hover { border-color:var(--border); }
+.opt-lbl { font-size:12px; font-weight:600; color:var(--text); }
+.opt-sub { font-size:10px; color:var(--muted); font-family:var(--mono); margin-top:2px; }
+.tog {
+  width:40px; height:22px; border-radius:11px;
+  background:var(--border2); border:none; cursor:pointer;
+  position:relative; flex-shrink:0; transition:background .25s;
+}
+.tog::after {
+  content:''; position:absolute;
+  width:16px; height:16px; background:#fff;
+  border-radius:50%; top:3px; left:3px;
+  transition:transform .25s;
+  box-shadow:0 1px 4px rgba(0,0,0,.4);
+}
+.tog.on { background:var(--accent); }
+.tog.on::after { transform:translateX(18px); }
+
+/* ── Buttons ── */
+.btns { display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap; }
+.btn {
+  flex:1; min-width:160px; padding:13px 18px;
+  border:none; border-radius:10px; cursor:pointer;
+  font-family:var(--sans); font-size:13px; font-weight:700;
+  transition:all .2s; letter-spacing:.3px; position:relative;
+}
+.btn:disabled { opacity:.35; cursor:not-allowed; pointer-events:none; }
+.btn-primary {
+  background:linear-gradient(135deg, var(--accentd), var(--accent));
+  color:#040d1a;
+}
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(45,212,255,.3); }
+.btn-ghost {
+  background:var(--s2); color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+.btn-gold {
+  background:linear-gradient(135deg, #d97706, var(--gold));
+  color:#1a0a00;
+}
+.btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(245,158,11,.3); }
+.btn-green {
+  background:linear-gradient(135deg, #15803d, var(--green));
+  color:#001a0a;
+}
+.btn-green:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(34,197,94,.3); }
+
+/* ── Progress ── */
+#prog-section {
+  display:none;
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:14px; padding:22px; margin-bottom:18px;
+}
+.prog-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.prog-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent); }
+.prog-pct { font-family:var(--mono); font-size:22px; font-weight:600; color:var(--accent); }
+.prog-track { height:5px; background:var(--s3); border-radius:3px; overflow:hidden; margin-bottom:8px; }
+.prog-fill {
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--accentd), var(--accent));
+  border-radius:3px; transition:width .25s ease;
+  box-shadow:0 0 12px rgba(45,212,255,.5);
+}
+.log-box {
+  font-family:var(--mono); font-size:10px; color:var(--muted);
+  max-height:90px; overflow-y:auto;
+  scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+}
+.log-box p { margin-bottom:2px; }
+.log-ok   { color:var(--green); }
+.log-err  { color:var(--red); }
+.log-warn { color:var(--gold); }
+.log-info { color:var(--accent); }
+
+/* ── Table section ── */
+#tbl-section {
+  display:none;
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:14px; padding:22px; margin-bottom:18px;
+}
+.tbl-top {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:14px; flex-wrap:wrap;
+}
+.tbl-top .ptitle { margin-bottom:0; flex:1; }
+.search-box {
+  display:flex; align-items:center; gap:8px;
+  background:var(--s2); border:1px solid var(--border);
+  border-radius:8px; padding:7px 12px; flex:1; max-width:280px;
+}
+.search-box input {
+  background:none; border:none; outline:none; color:var(--text);
+  font-family:var(--mono); font-size:11px; width:100%;
+}
+.search-box input::placeholder { color:var(--muted); }
+.count-chip {
+  background:rgba(45,212,255,.1); border:1px solid rgba(45,212,255,.2);
+  border-radius:20px; padding:3px 12px;
+  font-size:10px; font-family:var(--mono); color:var(--accent);
+}
+.tbl-wrap {
+  border-radius:8px; border:1px solid var(--border);
+  overflow:auto; max-height:450px;
+  scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+}
+table { width:100%; border-collapse:collapse; font-size:11px; }
+thead { position:sticky; top:0; z-index:2; }
+th {
+  background:var(--s3);
+  padding:9px 13px; text-align:left;
+  font-size:9px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.8px;
+  color:var(--accent); white-space:nowrap;
+  border-bottom:1px solid var(--border2);
+  cursor:pointer; user-select:none;
+}
+th:hover { color:#fff; }
+th .sort-ico { opacity:.4; margin-left:3px; }
+th.asc .sort-ico::after { content:'↑'; opacity:1; }
+th.desc .sort-ico::after { content:'↓'; opacity:1; }
+th:not(.asc):not(.desc) .sort-ico::after { content:'↕'; }
+td {
+  padding:8px 13px; border-bottom:1px solid rgba(28,51,84,.5);
+  color:var(--text); white-space:nowrap; font-family:var(--mono);
+}
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(45,212,255,.03); }
+.td-r { text-align:right; }
+.td-gold { color:var(--gold); }
+.td-green { color:var(--green); }
+.td-red { color:var(--red); }
+.td-mono { font-family:var(--mono); font-size:10px; }
+.td-ok   { color:var(--green); font-weight:700; font-size:10px; }
+.td-warn { color:var(--gold); font-weight:700; font-size:10px; }
+.page-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-top:12px; flex-wrap:wrap; gap:8px;
+}
+.page-info { font-size:10px; font-family:var(--mono); color:var(--muted); }
+.page-btns { display:flex; gap:6px; }
+.pbtn {
+  background:var(--s2); border:1px solid var(--border);
+  color:var(--text); border-radius:6px; padding:5px 12px;
+  font-size:10px; font-family:var(--mono); cursor:pointer;
+  transition:border-color .2s;
+}
+.pbtn:hover { border-color:var(--accent); color:var(--accent); }
+.pbtn:disabled { opacity:.35; cursor:default; pointer-events:none; }
+.pbtn.active { background:var(--accent); color:#040d1a; border-color:var(--accent); font-weight:700; }
+
+/* ── Footer ── */
+footer {
+  border-top:1px solid var(--border); margin-top:12px;
+  padding:18px 0; text-align:center;
+  font-size:10px; font-family:var(--mono); color:var(--muted);
+}
+
+/* ── Notification toast ── */
+#toast {
+  position:fixed; bottom:28px; right:28px; z-index:9999;
+  background:var(--s1); border:1px solid var(--border2);
+  border-radius:10px; padding:12px 18px;
+  font-size:12px; font-family:var(--mono);
+  display:none; max-width:360px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  animation:toastIn .25s ease;
+}
+@keyframes toastIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+@media(max-width:900px) {
+  .layout { grid-template-columns:1fr; }
+  .stats  { grid-template-columns:repeat(2,1fr); }
+  .btns   { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ── Header ── -->
+  <header class="hdr">
+    <div class="hdr-icon">🏛️</div>
+    <div class="hdr-text">
+      <h1>BPPU Enterprise Tool</h1>
+      <p>Bukti Pemotongan / Pemungutan PPh Unifikasi · Direktorat Jenderal Pajak RI</p>
+    </div>
+    <div class="hdr-right">
+      <span class="aldi-tag">
+        <span class="aldi-icon">⚡</span>
+        <span class="aldi-sep">by</span>
+        <span class="aldi-name">ALDI</span>
+      </span>
+      <span class="ver-tag">v2.0 Enterprise</span>
+      <span class="badge badge-red">DJP</span>
+      <span class="badge badge-blue">PPh UNIFIKASI</span>
+    </div>
+  </header>
+
+  <!-- ── Stats ── -->
+  <div class="stats">
+    <div class="sc" style="--sc-color:var(--accent)">
+      <div class="lbl">Total File</div>
+      <div class="val" id="s-total">0</div>
+      <div class="sub">PDF dipilih</div>
+    </div>
+    <div class="sc" style="--sc-color:var(--green)">
+      <div class="lbl">Berhasil</div>
+      <div class="val" id="s-ok">0</div>
+      <div class="sub">terekstrak</div>
+    </div>
+    <div class="sc" style="--sc-color:var(--gold)">
+      <div class="lbl">Parsial</div>
+      <div class="val" id="s-part">0</div>
+      <div class="sub">data tidak lengkap</div>
+    </div>
+    <div class="sc" style="--sc-color:var(--red)">
+      <div class="lbl">Gagal</div>
+      <div class="val" id="s-err">0</div>
+      <div class="sub">error parsing</div>
+    </div>
+    <div class="sc" style="--sc-color:var(--gold)">
+      <div class="lbl">Total PPh (Rp)</div>
+      <div class="val" id="s-pph" style="font-size:16px;margin-top:8px">0</div>
+      <div class="sub" id="s-dpp">DPP: Rp 0</div>
+    </div>
+  </div>
+
+  <!-- ── Main layout ── -->
+  <div class="layout">
+
+    <!-- Left: upload -->
+    <div class="panel">
+      <div class="ptitle">Upload PDF BPPU</div>
+
+      <div class="drop" id="dropzone">
+        <input type="file" id="fileInput" multiple accept=".pdf">
+        <span class="drop-ico">📂</span>
+        <h3>Drag &amp; Drop PDF di sini</h3>
+        <p>Atau klik untuk memilih · Support 2000+ file · Format BPPU Standar DJP</p>
+      </div>
+
+      <div id="flist"></div>
+    </div>
+
+    <!-- Right: options -->
+    <div class="panel">
+      <div class="ptitle">Konfigurasi Output</div>
+      <div class="opts">
+
+        <div class="opt-row">
+          <div>
+            <div class="opt-lbl">Gabungkan PDF</div>
+            <div class="opt-sub">Merge semua menjadi 1 file PDF</div>
+          </div>
+          <button class="tog on" id="tog-merge" onclick="this.classList.toggle('on')"></button>
+        </div>
+
+        <div class="opt-row">
+          <div>
+            <div class="opt-lbl">Rekap Excel</div>
+            <div class="opt-sub">Ekspor data ke XLSX dengan styling</div>
+          </div>
+          <button class="tog on" id="tog-excel" onclick="this.classList.toggle('on')"></button>
+        </div>
+
+        <div class="opt-row">
+          <div>
+            <div class="opt-lbl">Sheet Ringkasan</div>
+            <div class="opt-sub">Pivot per Pemotong &amp; Objek Pajak</div>
+          </div>
+          <button class="tog on" id="tog-summary" onclick="this.classList.toggle('on')"></button>
+        </div>
+
+        <div class="opt-row">
+          <div>
+            <div class="opt-lbl">Sheet Error</div>
+            <div class="opt-sub">Daftar file yang perlu diperiksa</div>
+          </div>
+          <button class="tog on" id="tog-err" onclick="this.classList.toggle('on')"></button>
+        </div>
+
+        <div class="opt-row">
+          <div>
+            <div class="opt-lbl">Mode Batch Otomatis</div>
+            <div class="opt-sub">50 file/batch · Hemat memori browser</div>
+          </div>
+          <div style="font-size:10px;color:var(--green);font-family:var(--mono);background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);padding:3px 10px;border-radius:4px">
+            ● Aktif
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Action buttons ── -->
+  <div class="btns">
+    <button class="btn btn-ghost" onclick="clearAll()">🗑 Bersihkan Semua</button>
+    <button class="btn btn-primary" id="btn-run" onclick="runAll()" disabled>⚡ Proses Semua PDF</button>
+    <button class="btn btn-gold" id="btn-excel" onclick="doExcel()" disabled>📊 Download Excel</button>
+    <button class="btn btn-green" id="btn-pdf" onclick="doMergedPDF()" disabled>📄 Download PDF Gabungan</button>
+  </div>
+
+  <!-- ── Progress ── -->
+  <div id="prog-section">
+    <div class="prog-head">
+      <span class="prog-label" id="prog-label">⚙ Memproses...</span>
+      <span class="prog-pct" id="prog-pct">0%</span>
+    </div>
+    <div class="prog-track">
+      <div class="prog-fill" id="prog-fill"></div>
+    </div>
+    <div class="log-box" id="log-box"></div>
+  </div>
+
+  <!-- ── Table ── -->
+  <div id="tbl-section">
+    <div class="tbl-top">
+      <div class="ptitle" style="margin-bottom:0">Rekap Data BPPU</div>
+      <div class="search-box">
+        <span style="color:var(--muted);font-size:12px">🔍</span>
+        <input id="search-inp" placeholder="Cari nomor, nama, objek..." oninput="applyFilter()">
+      </div>
+      <span class="count-chip" id="row-count">0 baris</span>
+    </div>
+    <div class="tbl-wrap">
+      <table id="rekap-tbl">
+        <thead>
+          <tr id="thead-row"></tr>
+        </thead>
+        <tbody id="rekap-body"></tbody>
+      </table>
+    </div>
+    <div class="page-bar">
+      <div class="page-info" id="page-info">Halaman 1 dari 1</div>
+      <div class="page-btns" id="page-btns"></div>
+    </div>
+  </div>
+
+  <footer>
+    Dibuat oleh <strong style="color:var(--purple)">ALDI</strong> &nbsp;·&nbsp;
+    BPPU Enterprise Tool v2.0 &nbsp;·&nbsp;
+    Semua proses lokal di browser — tidak ada data yang dikirim ke server &nbsp;·&nbsp;
+    Format: Bukti Pemotongan/Pemungutan PPh Unifikasi Standar DJP RI
+  </footer>
+
+</div><!-- /wrap -->
+
+<!-- ALDI Watermark -->
+<div class="watermark">⚡ Developed by <span>&nbsp;ALDI&nbsp;</span></div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════════════════ */
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const BATCH_SIZE  = 50;   // files processed in parallel per batch
+const PAGE_SIZE   = 50;   // rows per table page
+
+/* ══════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════ */
+let allFiles      = [];   // File[]
+let results       = [];   // parsed BPPU objects
+let mergedBytes   = null; // Uint8Array | null
+let filtered      = [];   // results after search filter
+let sortCol       = -1;
+let sortAsc       = true;
+let currentPage   = 1;
+
+/* ══════════════════════════════════════════════════════════
+   COLUMN DEFINITIONS (drives table + Excel)
+══════════════════════════════════════════════════════════ */
+const COLS = [
+  { key:'no',           label:'No',               w:5,  numeric:false },
+  { key:'nomor',        label:'Nomor BPPU',        w:16, numeric:false },
+  { key:'masaPajak',    label:'Masa Pajak',         w:12, numeric:false },
+  { key:'sifat',        label:'Sifat',               w:14, numeric:false },
+  { key:'statusBppu',   label:'Status BPPU',          w:16, numeric:false },
+  { key:'npwpDipotong', label:'NPWP/NIK Penerima', w:20, numeric:false },
+  { key:'namaDipotong', label:'Nama Penerima',      w:32, numeric:false },
+  { key:'nituPenerima',  label:'NITKU Penerima',      w:32, numeric:false },
+  { key:'kodeObjek',    label:'Kode Objek',         w:14, numeric:false },
+  { key:'objekPajak',   label:'Objek Pajak',        w:30, numeric:false },
+  { key:'dpp',          label:'DPP (Rp)',            w:18, numeric:true  },
+  { key:'tarif',        label:'Tarif (%)',           w:9,  numeric:true  },
+  { key:'pph',          label:'PPh (Rp)',            w:18, numeric:true  },
+  { key:'jenisPPh',     label:'Jenis PPh',           w:12, numeric:false },
+  { key:'noDoc',        label:'Nomor Dokumen',       w:20, numeric:false },
+  { key:'tglDoc',       label:'Tanggal Dokumen',     w:22, numeric:false },
+  { key:'npwpPemotong', label:'NPWP Pemotong',       w:20, numeric:false },
+  { key:'namaPemotong', label:'Nama Pemotong',        w:32, numeric:false },
+  { key:'nituPemotong',  label:'NITKU Pemotong',      w:32, numeric:false },
+  { key:'tglPotong',    label:'Tanggal Pemotongan',  w:22, numeric:false },
+  { key:'status',       label:'Status',              w:10, numeric:false },
+];
+
+/* ══════════════════════════════════════════════════════════
+   DROP ZONE & FILE INPUT
+══════════════════════════════════════════════════════════ */
+const dz   = document.getElementById('dropzone');
+const finp = document.getElementById('fileInput');
+
+finp.addEventListener('change', e => { addFiles([...e.target.files]); finp.value = ''; });
+
+dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', ()  => dz.classList.remove('over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('over');
+  addFiles([...e.dataTransfer.files].filter(f => f.name.toLowerCase().endsWith('.pdf')));
+});
+
+function addFiles(files) {
+  const before = allFiles.length;
+  files.forEach(f => {
+    const dup = allFiles.some(x => x.name === f.name && x.size === f.size);
+    if (!dup) allFiles.push(f);
+  });
+  const added = allFiles.length - before;
+  if (added > 0) { renderFileList(); updateStatBar(); }
+  document.getElementById('btn-run').disabled = allFiles.length === 0;
+}
+
+function renderFileList() {
+  const list = document.getElementById('flist');
+  list.innerHTML = '';
+  const shown = allFiles.slice(0, 120);
+  shown.forEach((f, i) => {
+    const div = document.createElement('div');
+    div.className = 'fi';
+    div.id = `fi${i}`;
+    div.innerHTML =
+      `<span class="fi-no">${i + 1}</span>` +
+      `<span class="fn" title="${esc(f.name)}">${esc(f.name)}</span>` +
+      `<span class="chip-status cs-wait" id="fs${i}">Menunggu</span>`;
+    list.appendChild(div);
+  });
+  if (allFiles.length > 120) {
+    const more = document.createElement('div');
+    more.style = 'text-align:center;padding:8px;font-size:10px;color:var(--muted);font-family:var(--mono)';
+    more.textContent = `+ ${allFiles.length - 120} file lainnya`;
+    list.appendChild(more);
+  }
+}
+
+function setFileStatus(idx, cls, label) {
+  const el = document.getElementById(`fs${idx}`);
+  if (!el) return;
+  el.className = `chip-status ${cls}`;
+  el.textContent = label;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CLEAR
+══════════════════════════════════════════════════════════ */
+function clearAll() {
+  allFiles = []; results = []; mergedBytes = null;
+  filtered = []; currentPage = 1;
+  document.getElementById('flist').innerHTML = '';
+  document.getElementById('rekap-body').innerHTML = '';
+  document.getElementById('tbl-section').style.display = 'none';
+  document.getElementById('prog-section').style.display = 'none';
+  ['btn-run','btn-excel','btn-pdf'].forEach(id =>
+    document.getElementById(id).disabled = true);
+  document.getElementById('btn-run').disabled = true;
+  updateStatBar();
+}
+
+/* ══════════════════════════════════════════════════════════
+   STATS
+══════════════════════════════════════════════════════════ */
+function updateStatBar() {
+  const total = allFiles.length;
+  const ok    = results.filter(r => r.valid).length;
+  const part  = results.filter(r => !r.valid && !r._error).length;
+  const err   = results.filter(r => r._error).length;
+  const pph   = results.reduce((s, r) => s + (r.pph || 0), 0);
+  const dpp   = results.reduce((s, r) => s + (r.dpp || 0), 0);
+
+  document.getElementById('s-total').textContent = total.toLocaleString('id');
+  document.getElementById('s-ok').textContent    = ok.toLocaleString('id');
+  document.getElementById('s-part').textContent  = part.toLocaleString('id');
+  document.getElementById('s-err').textContent   = err.toLocaleString('id');
+  document.getElementById('s-pph').textContent   = 'Rp ' + fmtRp(pph);
+  document.getElementById('s-dpp').textContent   = 'DPP: Rp ' + fmtRp(dpp);
+}
+
+/* ══════════════════════════════════════════════════════════
+   LOGGING
+══════════════════════════════════════════════════════════ */
+function log(msg, type) {
+  const box = document.getElementById('log-box');
+  const p   = document.createElement('p');
+  p.className = type ? `log-${type}` : '';
+  p.textContent = `[${new Date().toLocaleTimeString('id')}] ${msg}`;
+  box.appendChild(p);
+  box.scrollTop = box.scrollHeight;
+}
+
+function setProgress(pct, label) {
+  document.getElementById('prog-fill').style.width = Math.min(pct, 100) + '%';
+  document.getElementById('prog-pct').textContent  = Math.round(pct) + '%';
+  if (label) document.getElementById('prog-label').textContent = label;
+}
+
+/* ══════════════════════════════════════════════════════════
+   MAIN PROCESS
+══════════════════════════════════════════════════════════ */
+async function runAll() {
+  if (!allFiles.length) return;
+
+  results = []; mergedBytes = null; currentPage = 1;
+
+  document.getElementById('prog-section').style.display = 'block';
+  document.getElementById('tbl-section').style.display  = 'none';
+  document.getElementById('log-box').innerHTML = '';
+  document.getElementById('btn-run').disabled   = true;
+  document.getElementById('btn-excel').disabled = true;
+  document.getElementById('btn-pdf').disabled   = true;
+
+  setProgress(0, '⚙ Memproses...');
+  log(`Memulai proses ${allFiles.length} file PDF...`, 'info');
+
+  const doMerge = document.getElementById('tog-merge').classList.contains('on');
+  let mergedDoc = doMerge ? await PDFLib.PDFDocument.create() : null;
+
+  for (let i = 0; i < allFiles.length; i += BATCH_SIZE) {
+    const batch = allFiles.slice(i, i + BATCH_SIZE);
+    const tasks = batch.map((f, bi) => processSingle(f, i + bi, doMerge));
+    const batchResults = await Promise.allSettled(tasks);
+
+    for (const res of batchResults) {
+      if (res.status === 'fulfilled') {
+        const { data, pdfDoc } = res.value;
+        results.push(data);
+
+        if (doMerge && pdfDoc) {
+          try {
+            const pages = await mergedDoc.copyPages(pdfDoc, pdfDoc.getPageIndices());
+            pages.forEach(pg => mergedDoc.addPage(pg));
+          } catch (_) { /* skip page copy error */ }
+        }
+      }
+    }
+
+    const done = Math.min(i + batch.length, allFiles.length);
+    setProgress((done / allFiles.length) * 90);
+    updateStatBar();
+    await sleep(8); // yield to browser paint
+  }
+
+  if (doMerge && mergedDoc) {
+    setProgress(92, '⚙ Menggabungkan PDF...');
+    log('Menggabungkan halaman PDF...', 'info');
+    try {
+      mergedBytes = await mergedDoc.save();
+      log(`PDF gabungan: ${results.length} file, ${fmtSize(mergedBytes.byteLength)}`, 'ok');
+    } catch (e) {
+      log('Gagal merge PDF: ' + e.message, 'err');
+    }
+  }
+
+  setProgress(100, '✓ Selesai');
+  const ok   = results.filter(r => r.valid).length;
+  const part = results.filter(r => !r.valid && !r._error).length;
+  const err  = results.filter(r => r._error).length;
+  log(`Selesai — ${ok} valid · ${part} parsial · ${err} error`, 'ok');
+
+  // ── Deteksi duplikat Nomor BPPU ──
+  {
+    const nomorCount = {};
+    results.forEach(d => { if (d.nomor) nomorCount[d.nomor] = (nomorCount[d.nomor] || 0) + 1; });
+    let dupCount = 0;
+    results.forEach(d => {
+      if (d.nomor && nomorCount[d.nomor] > 1) {
+        d.duplikat = true;
+        d.validNote = ((d.validNote ? d.validNote + ' ' : '') + `⚠ Duplikat nomor (${nomorCount[d.nomor]}x).`).trim();
+        dupCount++;
+      }
+    });
+    if (dupCount > 0) log(`⚠ Ditemukan ${dupCount} BPPU dengan Nomor duplikat — cek sheet "Perlu Diperiksa".`, 'warn');
+  }
+
+  renderTable();
+  updateStatBar();
+
+  document.getElementById('btn-run').disabled   = false;
+  document.getElementById('btn-excel').disabled = results.length === 0;
+  document.getElementById('btn-pdf').disabled   = !mergedBytes;
+}
+
+/* ══════════════════════════════════════════════════════════
+   PROCESS SINGLE PDF
+══════════════════════════════════════════════════════════ */
+async function processSingle(file, idx, needDoc) {
+  try {
+    const buf = await file.arrayBuffer();
+
+    // ── Extract text with line grouping ──
+    const pdfjs = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;
+    let lineText = '';   // lines separated by \n
+    let flatText = '';   // everything on one line (fallback)
+
+    for (let pg = 1; pg <= pdfjs.numPages; pg++) {
+      const page = await pdfjs.getPage(pg);
+      const tc   = await page.getTextContent();
+
+      // Group items by Y coordinate (round to 2pt buckets)
+      const yMap = {};
+      for (const item of tc.items) {
+        if (!item.str || !item.str.trim()) continue;
+        const y = Math.round(item.transform[5] / 2) * 2;
+        if (!yMap[y]) yMap[y] = [];
+        yMap[y].push({ x: item.transform[4], s: item.str });
+      }
+
+      // Sort rows top→bottom (PDF Y grows upward → sort descending)
+      const ys = Object.keys(yMap).map(Number).sort((a, b) => b - a);
+      for (const y of ys) {
+        const row = yMap[y].sort((a, b) => a.x - b.x).map(i => i.s).join(' ');
+        lineText += row + '\n';
+        flatText += row + ' ';
+      }
+      lineText += '\n';
+    }
+    flatText = flatText.trim();
+
+    // ── Parse BPPU fields ──
+    const data = parseBPPU(lineText, flatText, file.name);
+
+    // ── Status chip ──
+    if (data._error) {
+      setFileStatus(idx, 'cs-err', 'Error');
+    } else if (data.valid) {
+      setFileStatus(idx, 'cs-ok', 'OK');
+    } else {
+      setFileStatus(idx, 'cs-part', 'Parsial');
+    }
+
+    // ── PDF-lib doc for merge ──
+    let pdfDoc = null;
+    if (needDoc) {
+      try { pdfDoc = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: true }); }
+      catch (_) { /* encrypted or corrupt */ }
+    }
+
+    return { data, pdfDoc };
+
+  } catch (e) {
+    setFileStatus(idx, 'cs-err', 'Error');
+    log(`✗ ${file.name}: ${e.message}`, 'err');
+    return {
+      data: { filename: file.name, _error: true, valid: false,
+              nomor:'', masaPajak:'', npwpDipotong:'', namaDipotong:'',
+              kodeObjek:'', objekPajak:'', dpp:0, tarif:0, pph:0,
+              jenisPPh:'', noDoc:'', tglDoc:'', npwpPemotong:'',
+              namaPemotong:'', nituPemotong:'', nituPenerima:'', tglPotong:'', sifat:'', statusBppu:'',
+              validNote: e.message },
+      pdfDoc: null
+    };
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   BPPU PARSER
+   Receives:
+     lineText — text with \n between visual rows
+     flatText — all text joined with spaces (fallback)
+     filename — source file name
+══════════════════════════════════════════════════════════ */
+function parseBPPU(lineText, flatText, filename) {
+
+  // Split into trimmed non-empty lines for line-by-line search
+  const lines = lineText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+  /* ── Helper: first regex match across lines ── */
+  function gLine(patterns) {
+    for (const p of patterns) {
+      for (const ln of lines) {
+        const m = ln.match(p);
+        if (m && m[1]) return m[1].trim();
+      }
+    }
+    return '';
+  }
+
+  /* ── Helper: line at index offset ── */
+  function lineAt(idx, offset) {
+    const i = idx + offset;
+    return (i >= 0 && i < lines.length) ? lines[i] : '';
+  }
+
+  /* ── Helper: first regex match on flat text ── */
+  function gFlat(patterns) {
+    for (const p of patterns) {
+      const m = flatText.match(p);
+      if (m && m[1]) return m[1].trim();
+    }
+    return '';
+  }
+
+  /* ── Number parser: "1.500.000" or "30.000" → number ── */
+  function toNum(s) {
+    if (!s) return 0;
+    // Indonesian: dot = thousands separator, comma = decimal
+    return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     NOMOR BPPU
+     Document header has 2 rows:
+       Row 1: NOMOR | MASA PAJAK | SIFAT... | STATUS...
+       Row 2: 26004LTTL | 01-2026 | TIDAK FINAL | NORMAL
+     Key insight: the NOMOR value is the token that sits
+     immediately before the Masa Pajak (MM-YYYY) pattern.
+  ══════════════════════════════════════════════════════ */
+  let nomor = '';
+
+  // 1) Flat text: token immediately before MM-YYYY (most reliable)
+  {
+    const m = flatText.match(/\b([A-Z0-9][A-Z0-9\-\/\.]{2,})\s+(\d{1,2}-\d{4})\b/i);
+    if (m) {
+      const cand = m[1];
+      // Reject pure numbers (could be a date fragment) and known header words
+      if (!/^\d+$/.test(cand) && !/^(NOMOR|MASA|SIFAT|STATUS)$/i.test(cand)) {
+        nomor = cand;
+      }
+    }
+  }
+
+  // 2) Line-based: first token on value row (after NOMOR header row)
+  if (!nomor) {
+    const nHdrIdx = lines.findIndex(l =>
+      /^NOMOR\s*$/i.test(l) ||
+      /\bNOMOR\s+MASA\s*PAJAK/i.test(l) ||
+      /^NOMOR\s+MASA/i.test(l)
+    );
+    if (nHdrIdx >= 0) {
+      for (let i = nHdrIdx + 1; i < Math.min(nHdrIdx + 5, lines.length); i++) {
+        const tok = lines[i].match(/^([A-Z0-9][A-Z0-9\-\/\.]*)/i);
+        if (tok && !/^(TIDAK|FINAL|NORMAL|MASA|SIFAT|STATUS|A\.|B\.|C\.)/i.test(tok[1])) {
+          nomor = tok[1]; break;
+        }
+      }
+    }
+  }
+
+  // 3) Line-based: any line starting with value before MM-YYYY
+  if (!nomor) {
+    for (const ln of lines) {
+      const m = ln.match(/^([A-Z0-9][A-Z0-9\-\/\.]{2,})\s+\d{1,2}-\d{4}/i);
+      if (m && !/^(NOMOR|MASA|SIFAT|STATUS|TIDAK|FINAL|NORMAL)/i.test(m[1])) {
+        nomor = m[1]; break;
+      }
+    }
+  }
+
+  // 4) Last resort: filename without extension
+  if (!nomor) nomor = filename.replace(/\.pdf$/i, '');
+
+  /* ══════════════════════════════════════════════════════
+     MASA PAJAK  e.g. "01-2026", "12-2025"
+  ══════════════════════════════════════════════════════ */
+  const masaPajak = gFlat([/\b(\d{1,2}-\d{4})\b/]) ||
+                    gLine([/\b(\d{1,2}-\d{4})\b/]);
+
+  /* ══════════════════════════════════════════════════════
+     SECTION A — Penerima (yang dipotong/dipungut)
+     A.1 NPWP/NIK  : 0028774578058000
+     A.2 NAMA      : JAS WORLDWIDE INDONESIA
+  ══════════════════════════════════════════════════════ */
+  const npwpDipotong = gLine([
+    /A[\.\s]*1[^:]*:\s*(\d{15,16})/,
+    /NPWP\s*\/\s*NIK\s*[:\s]+\s*(\d{15,16})/i,
+  ]) || gFlat([/\b(0\d{14,15})\b/]);
+
+  // A.2 NAMA — value after ":" on same line, or next line
+  let namaDipotong = '';
+  {
+    const a2idx = lines.findIndex(l => /A[\.\s]*2\b/i.test(l) || /^NAMA\s*:/i.test(l));
+    if (a2idx >= 0) {
+      const val = lines[a2idx].match(/:\s*(.{3,60})$/);
+      if (val) {
+        namaDipotong = val[1].trim();
+      } else {
+        const nxt = lineAt(a2idx, 1);
+        if (nxt && !/^A[\.\s]*3/i.test(nxt) && !/^\d/.test(nxt)) {
+          namaDipotong = nxt;
+        }
+      }
+    }
+    if (!namaDipotong) namaDipotong = gFlat([/A[\.\s]*2[^:]*:\s*(.{5,60}?)(?:\s+A[\.\s]*3|$)/i]);
+    namaDipotong = (namaDipotong || '').replace(/A[\.\s]*3.*/i, '').trim();
+  }
+
+  /* ── NITKU Penerima (A.3) ──
+     Format: "0028774578058000000000 - JAS WORLDWIDE INDONESIA"
+     First 22-digit number, or full string after "NITKU)"
+  ── */
+  let nituPenerima = '';
+  {
+    const a3idx = lines.findIndex(l => /A[\.\ s]*3\b/i.test(l) || /NITKU\)/i.test(l));
+    if (a3idx >= 0) {
+      // Same line after ":"
+      const val = lines[a3idx].match(/:\s*(.{6,80})$/);
+      if (val) nituPenerima = val[1].trim();
+      else {
+        // Next line(s)
+        for (let i = a3idx + 1; i < Math.min(a3idx + 4, lines.length); i++) {
+          if (/^B[\.\ s]*\d|^PEMOTONGAN/i.test(lines[i])) break;
+          if (/\d{10,}/.test(lines[i])) { nituPenerima = lines[i].trim(); break; }
+        }
+      }
+    }
+    if (!nituPenerima) nituPenerima = gFlat([/A[\.\ s]*3[^:]*:\s*(.{6,80}?)(?:\s+B[\.\ s]*\d|$)/i]);
+    nituPenerima = (nituPenerima || '').replace(/B[\.\ s]*\d.*/i,'').trim();
+  }
+
+  /* ══════════════════════════════════════════════════════
+     SECTION B — Pemotongan
+     B.2 Jenis PPh  : Pasal 23
+     B.3 Kode Objek : 24-104-40
+     B.4 Objek Pajak: Jasa Freight Forwarding
+     B.5 DPP        : 1.500.000
+     B.6 Tarif      : 2
+     B.7 PPh        : 30.000
+  ══════════════════════════════════════════════════════ */
+  const jenisPPhNum = gLine([
+    /Jenis\s*PPh\s*[:\s]+Pasal\s*(\d+)/i,
+    /PPh\s+Pasal\s*(\d+)/i,
+  ]) || gFlat([/PPh\s+Pasal\s*(\d+)/i]);
+
+  /* ── Kode Objek Pajak: XX-XXX-XX ── */
+  const kodeObjek = gFlat([/(\d{2}-\d{3}-\d{2})/]) ||
+                    gLine([/(\d{2}-\d{3}-\d{2})/]);
+
+  /* ── Objek Pajak ──
+     Data row format:
+       "24-104-40 Jasa Freight Forwarding 1.500.000 2 30.000"
+     Extract text AFTER kodeObjek, BEFORE first DPP number.
+     Handles: letters, spaces, /, &, -, ., (, )
+  ── */
+  let objekPajak = '';
+  if (kodeObjek) {
+    const koLineIdx = lines.findIndex(l => l.includes(kodeObjek));
+    if (koLineIdx >= 0) {
+      const koLine   = lines[koLineIdx];
+      const koEnd    = koLine.indexOf(kodeObjek) + kodeObjek.length;
+      const afterKode = koLine.slice(koEnd).trim();
+
+      if (afterKode.length > 0) {
+        // Grab all text before first number sequence (which is DPP)
+        // DPP looks like: 1.500.000 or 30.000 (has dot-thousands format)
+        const m = afterKode.match(/^([A-Za-z][A-Za-z\s\/&\-\.\(\),]{1,80?}?)\s{2,}\d|^([A-Za-z][A-Za-z\s\/&\-\.\(\),]{1,80?}?)\s+\d{1,3}[.,]\d{3}/);
+        if (m) {
+          objekPajak = (m[1] || m[2] || '').trim();
+        } else {
+          // Fallback: all leading alpha text
+          const m2 = afterKode.match(/^([A-Za-z][A-Za-z\s\/&\-\.\(\),]{1,80})/);
+          if (m2) objekPajak = m2[1].trim();
+        }
+      } else {
+        // kodeObjek at end of line — objek is on next line
+        const nxtLine = lineAt(koLineIdx, 1);
+        if (nxtLine && !/^\d{2}-\d{3}-\d{2}/.test(nxtLine)) {
+          const m3 = nxtLine.match(/^([A-Za-z][A-Za-z\s\/&\-\.\(\),]{1,80?}?)(?:\s+\d|$)/);
+          if (m3) objekPajak = m3[1].trim();
+        }
+      }
+    }
+  }
+  // Final fallback
+  if (!objekPajak) {
+    objekPajak =
+      gFlat([/\d{2}-\d{3}-\d{2}\s+([A-Za-z][A-Za-z\s\/&\-\.\(\),]{4,60}?)\s+\d{1,3}[.,]/]) ||
+      gLine([/\d{2}-\d{3}-\d{2}\s+([A-Za-z][A-Za-z\s\/&\-\.\(\),]{4,60})/]);
+  }
+
+  /* ── DPP / Tarif / PPh ──
+     Cases handled:
+     A) Single-line: "24-104-40 Jasa Freight Forwarding 1.500.000 2 30.000"
+     B) Multi-line objek (wraps): numbers on line AFTER objek text
+        Line 1: "24-104-14 Jasa Penunjang di Bidang Penerbangan dan"
+        Line 2: "Bandar Udara"
+        Line 3: "100.000 2 2.000"
+     Build a window: kodeObjek line + next 4 lines joined, then
+     also scan full flatText as safety net.
+     Sanity: PPh ≈ DPP × Tarif / 100 (within 5% tolerance)
+  ── */
+  let dpp = 0, tarif = 0, pph = 0;
+  {
+    // Build search window: lines around kodeObjek + full flat as fallback
+    let windowText = '';
+    if (kodeObjek) {
+      const koIdx = lines.findIndex(l => l.includes(kodeObjek));
+      if (koIdx >= 0) {
+        // Take kodeObjek line + next 4 lines (covers 2-line objek wrap + numbers row)
+        const windowLines = lines.slice(koIdx, Math.min(koIdx + 5, lines.length));
+        windowText = windowLines.join(' ') + ' ';
+      }
+    }
+    // Always append full flat text so nothing is missed
+    const searchIn = windowText + flatText;
+
+    // Number pattern: dot-thousands format (e.g. 100.000, 1.500.000, 2.000)
+    // OR plain integer ≥4 digits.
+    // Tarif: 1–2 digit integer (1–30%)
+    const re = /(\d{1,3}(?:\.\d{3})+|\d{4,})\s+(\d{1,2})\s+(\d{1,3}(?:\.\d{3})+|\d{4,})/g;
+    let best = null, m;
+    while ((m = re.exec(searchIn)) !== null) {
+      const d = toNum(m[1]), t = toNum(m[2]), p = toNum(m[3]);
+      if (t >= 1 && t <= 30 && d > 0 && p > 0) {
+        const expected = d * t / 100;
+        const ratio    = expected > 0 ? Math.abs(p - expected) / expected : 1;
+        if (ratio <= 0.05 && (!best || ratio < best.ratio)) {
+          best = { d, t, p, ratio };
+        }
+      }
+    }
+    if (best) { dpp = best.d; tarif = best.t; pph = best.p; }
+  }
+
+  /* ══════════════════════════════════════════════════════
+     NOMOR DOKUMEN  (B.9)
+     Formats seen in real documents:
+       "12.28.IU/RE-25"                     — mixed chars, no spaces
+       "JKT500132005"                        — alphanumeric
+       "REIMB WHT 23 INV 24222512053163"    — HAS SPACES
+     Strategy: grab the FULL text after ":" on the
+     "Nomor Dokumen" line (or next line). DON'T stop at spaces.
+  ══════════════════════════════════════════════════════ */
+  let noDoc = '';
+  {
+    const SKIP_RE = /^(B\.\d{1,2}\b|UNTUK\s+INSTANSI|NOMOR\s+SP2D|C\.\s*IDENTITAS|Tanggal\s*:)/i;
+
+    const ndIdx = lines.findIndex(l => /nomor\s*dokumen/i.test(l));
+    if (ndIdx >= 0) {
+      // 1) Same line — grab FULL text after ":"  (preserves spaces in doc number)
+      const sameLineMatch = lines[ndIdx].match(/nomor\s*dokumen[^:]*:\s*(.+)$/i);
+      if (sameLineMatch) {
+        const val = sameLineMatch[1].trim();
+        if (val && !SKIP_RE.test(val)) noDoc = val;
+      }
+
+      // 2) Value on a separate line (PDF.js sometimes splits label and value)
+      if (!noDoc) {
+        for (let i = ndIdx + 1; i < Math.min(ndIdx + 4, lines.length); i++) {
+          const nxt = lines[i].replace(/^[:\s]+/, '').trim();
+          if (!nxt || SKIP_RE.test(nxt)) continue;
+          // Skip pure header-like lines (e.g. "B.10", "C.")
+          if (/^[A-Z\.\s]{1,5}$/.test(nxt)) continue;
+          noDoc = nxt;
+          break;
+        }
+      }
+    }
+
+    // 3) Flat text fallback — everything between "Nomor Dokumen :" and next section
+    if (!noDoc) {
+      const m = flatText.match(/Nomor\s*Dokumen\s*[:\s]+(.+?)(?:\s{2,}|\s+(?:B\.10|B\.11|C\.|UNTUK|Tanggal\s*:))/i);
+      if (m) noDoc = m[1].trim();
+    }
+    if (!noDoc) {
+      const m2 = flatText.match(/Nomor\s*Dokumen\s*[:\s]+([A-Z0-9][^\n]{1,80})/i);
+      if (m2) noDoc = m2[1].trim();
+    }
+
+    // 4) Strip any trailing noise that leaked in
+    noDoc = noDoc
+      .replace(/\s+(B\.\d{1,2}|UNTUK|Tanggal\s*:|C\.\d|Nomor\s+SP2D).*/i, '')
+      .trim();
+  }
+
+
+  /* ── Tanggal Dokumen ── */
+  // The date appears near "Tanggal" on the same line as noDoc or adjacent
+  const MONTHS = 'Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember';
+  const tglDoc = gLine([
+    new RegExp(`Tanggal\\s*[:\\s]+(\\d{1,2}\\s+(?:${MONTHS})\\s+\\d{4})`, 'i'),
+    new RegExp(`(\\d{1,2}\\s+(?:${MONTHS})\\s+\\d{4})`, 'i'),
+  ]) || gFlat([
+    new RegExp(`(\\d{1,2}\\s+(?:${MONTHS})\\s+\\d{4})`, 'i'),
+    /(\d{2}[\/\-]\d{2}[\/\-]\d{4})/,
+  ]);
+
+  /* ─────────────────────────────────────────────────────
+     SECTION C — Pemotong
+  ───────────────────────────────────────────────────── */
+  // NPWP Pemotong: often second 16-digit number in doc
+  let npwpPemotong = gLine([
+    /C[\.\s]*1[^:]*:\s*(\d{15,16})/,
+  ]);
+  if (!npwpPemotong) {
+    // Grab all 16-digit numbers, use second one (first = penerima)
+    const all16 = [...flatText.matchAll(/\b(0\d{14,15})\b/g)].map(m => m[1]);
+    if (all16.length >= 2) npwpPemotong = all16[1];
+    else if (all16.length === 1 && !npwpDipotong) npwpPemotong = all16[0];
+  }
+
+  // NITKU Pemotong (C.2)
+  let nituPemotong = '';
+  {
+    const c2idx = lines.findIndex(l => /C[\.\ s]*2\b/i.test(l));
+    if (c2idx >= 0) {
+      const val = lines[c2idx].match(/:\s*(.{6,80})$/);
+      if (val) nituPemotong = val[1].trim();
+      else {
+        for (let i = c2idx + 1; i < Math.min(c2idx + 4, lines.length); i++) {
+          if (/^C[\.\ s]*3/i.test(lines[i])) break;
+          if (/\d{10,}/.test(lines[i])) { nituPemotong = lines[i].trim(); break; }
+        }
+      }
+    }
+    if (!nituPemotong) nituPemotong = gFlat([/C[\.\ s]*2[^:]*:\s*(.{6,80}?)(?:\s+C[\.\ s]*3|$)/i]);
+    nituPemotong = (nituPemotong || '').replace(/C[\.\ s]*3.*/i,'').trim();
+  }
+
+  // Nama Pemotong
+  let namaPemotong = gLine([
+    /C[\.\s]*3[^:]*:\s*(.{5,60})/,
+    /NAMA\s+PEMOTONG[^:]*:\s*(.{5,60})/i,
+  ]);
+  if (namaPemotong) namaPemotong = namaPemotong.replace(/C[\.\s]*4.*/i,'').trim();
+
+  // Tanggal Pemotongan
+  const tglPotong = gLine([
+    /C[\.\s]*4[^:]*:\s*(\d{1,2}\s+\w+\s+\d{4})/,
+    new RegExp(`TANGGAL\\s*[:\\s]+(\\d{1,2}\\s+(?:${MONTHS})\\s+\\d{4})`, 'i'),
+  ]) || gFlat([
+    new RegExp(`C[\\.\\s]*4[^:]*:\\s*(\\d{1,2}\\s+(?:${MONTHS})\\s+\\d{4})`, 'i'),
+  ]);
+
+  /* ── Sifat Pemotongan (FINAL / TIDAK FINAL) ── */
+  // Header row: "26004LTTL 01-2026 TIDAK FINAL NORMAL"
+  const sifat = gFlat([/\b(TIDAK\s+FINAL|FINAL)\b/]) || '';
+
+  /* ── Status BPPU (NORMAL / PEMBETULAN) ── */
+  const statusBppu = gFlat([/\b(PEMBETULAN|NORMAL)\b/]) || '';
+
+  /* ── Validity ── */
+  const valid = !!(nomor && dpp > 0 && pph > 0);
+  let validNote = '';
+  if (!nomor)        validNote += 'Nomor tidak ditemukan. ';
+  if (!npwpDipotong) validNote += 'NPWP penerima tidak ditemukan. ';
+  if (dpp <= 0)      validNote += 'DPP tidak terbaca. ';
+  if (pph <= 0)      validNote += 'PPh tidak terbaca. ';
+  if (!objekPajak)   validNote += 'Objek pajak tidak terbaca. ';
+  if (!noDoc)        validNote += 'Nomor dokumen tidak terbaca. ';
+
+  return {
+    filename,
+    nomor,
+    masaPajak:    masaPajak    || '',
+    npwpDipotong:  npwpDipotong  || '',
+    namaDipotong:  namaDipotong  || '',
+    nituPenerima:  nituPenerima  || '',
+    kodeObjek:    kodeObjek    || '',
+    objekPajak:   objekPajak   || '',
+    dpp, tarif, pph,
+    jenisPPh:     'Pasal ' + (jenisPPhNum || '23'),
+    noDoc:        noDoc        || '',
+    tglDoc:       tglDoc       || '',
+    npwpPemotong:  npwpPemotong  || '',
+    namaPemotong:  namaPemotong  || '',
+    nituPemotong:  nituPemotong  || '',
+    tglPotong:    tglPotong    || '',
+    sifat:        sifat        || '',
+    statusBppu:   statusBppu   || '',
+    valid,
+    validNote:    validNote.trim(),
+    _error:       false,
+  };
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABLE RENDER + SORT + FILTER + PAGINATION
+══════════════════════════════════════════════════════════ */
+function buildTableHeader() {
+  const tr = document.getElementById('thead-row');
+  tr.innerHTML = '';
+  COLS.forEach((c, i) => {
+    const th = document.createElement('th');
+    th.innerHTML = c.label + ' <span class="sort-ico"></span>';
+    th.title = 'Klik untuk urutkan';
+    th.addEventListener('click', () => {
+      if (sortCol === i) sortAsc = !sortAsc;
+      else { sortCol = i; sortAsc = true; }
+      applyFilter();
+    });
+    tr.appendChild(th);
+  });
+}
+
+function applyFilter() {
+  const q = (document.getElementById('search-inp').value || '').toLowerCase().trim();
+  filtered = q
+    ? results.filter(r =>
+        Object.values(r).some(v => typeof v === 'string' && v.toLowerCase().includes(q)) ||
+        String(r.dpp).includes(q) || String(r.pph).includes(q))
+    : [...results];
+
+  // Sort
+  if (sortCol >= 1) {
+    const key = COLS[sortCol].key;
+    const num = COLS[sortCol].numeric;
+    filtered.sort((a, b) => {
+      const va = num ? (a[key] || 0) : (a[key] || '').toString().toLowerCase();
+      const vb = num ? (b[key] || 0) : (b[key] || '').toString().toLowerCase();
+      return sortAsc ? (va > vb ? 1 : va < vb ? -1 : 0)
+                     : (va < vb ? 1 : va > vb ? -1 : 0);
+    });
+  }
+
+  // Update sort icons on header
+  const ths = document.getElementById('thead-row').querySelectorAll('th');
+  ths.forEach((th, i) => {
+    th.classList.remove('asc','desc');
+    if (i === sortCol) th.classList.add(sortAsc ? 'asc' : 'desc');
+  });
+
+  currentPage = 1;
+  renderPage();
+}
+
+function renderPage() {
+  const body   = document.getElementById('rekap-body');
+  const total  = filtered.length;
+  const pages  = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (currentPage > pages) currentPage = pages;
+
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const slice = filtered.slice(start, start + PAGE_SIZE);
+
+  body.innerHTML = '';
+  slice.forEach((d, si) => {
+    const rowNo = start + si + 1;
+    const tr = document.createElement('tr');
+    tr.innerHTML = [
+      `<td>${rowNo}</td>`,
+      `<td class="td-mono">${esc(d.nomor)}</td>`,
+      `<td>${esc(d.masaPajak)}</td>`,
+      `<td>${esc(d.sifat)}</td>`,
+      `<td class="${''}${(d.statusBppu||'').toUpperCase()==='PEMBETULAN'?'td-warn':''}">${esc(d.statusBppu)}</td>`,
+      `<td class="td-mono" style="font-size:10px">${esc(d.npwpDipotong)}</td>`,
+      `<td>${esc(d.namaDipotong)}</td>`,
+      `<td class="td-mono" style="font-size:10px">${esc(d.nituPenerima)}</td>`,
+      `<td class="td-mono">${esc(d.kodeObjek)}</td>`,
+      `<td>${esc(d.objekPajak)}</td>`,
+      `<td class="td-r td-gold">${fmtRp(d.dpp)}</td>`,
+      `<td class="td-r">${d.tarif ? d.tarif + '%' : ''}</td>`,
+      `<td class="td-r td-gold">${fmtRp(d.pph)}</td>`,
+      `<td>${esc(d.jenisPPh)}</td>`,
+      `<td class="td-mono">${esc(d.noDoc)}</td>`,
+      `<td>${esc(d.tglDoc)}</td>`,
+      `<td class="td-mono" style="font-size:10px">${esc(d.npwpPemotong)}</td>`,
+      `<td>${esc(d.namaPemotong)}</td>`,
+      `<td class="td-mono" style="font-size:10px">${esc(d.nituPemotong)}</td>`,
+      `<td>${esc(d.tglPotong)}</td>`,
+      `<td class="${d.valid ? 'td-ok' : 'td-warn'}">${d.valid ? '✓ VALID' : '⚠ CEK'}</td>`,
+    ].join('');
+    body.appendChild(tr);
+  });
+
+  document.getElementById('row-count').textContent  = `${total.toLocaleString('id')} baris`;
+  document.getElementById('page-info').textContent  = `Halaman ${currentPage} dari ${pages}`;
+
+  // Pagination buttons
+  const pb = document.getElementById('page-btns');
+  pb.innerHTML = '';
+  // Prev
+  const prev = mkPBtn('← Prev', currentPage <= 1, () => { currentPage--; renderPage(); });
+  pb.appendChild(prev);
+  // Page numbers (max 7 visible)
+  const radius = 2;
+  let lo = Math.max(1, currentPage - radius);
+  let hi = Math.min(pages, currentPage + radius);
+  if (lo > 1) { pb.appendChild(mkPBtn('1', false, () => { currentPage=1; renderPage(); })); if (lo>2) pb.appendChild(mkEllipsis()); }
+  for (let p = lo; p <= hi; p++) {
+    const btn = mkPBtn(String(p), false, (pp => () => { currentPage=pp; renderPage(); })(p));
+    if (p === currentPage) btn.classList.add('active');
+    pb.appendChild(btn);
+  }
+  if (hi < pages) { if (hi<pages-1) pb.appendChild(mkEllipsis()); pb.appendChild(mkPBtn(String(pages), false, () => { currentPage=pages; renderPage(); })); }
+  // Next
+  const next = mkPBtn('Next →', currentPage >= pages, () => { currentPage++; renderPage(); });
+  pb.appendChild(next);
+}
+
+function mkPBtn(label, disabled, onClick) {
+  const b = document.createElement('button');
+  b.className = 'pbtn'; b.textContent = label; b.disabled = disabled;
+  b.addEventListener('click', onClick);
+  return b;
+}
+function mkEllipsis() {
+  const s = document.createElement('span');
+  s.textContent = '…'; s.style = 'padding:5px 4px;color:var(--muted);font-size:11px';
+  return s;
+}
+
+function renderTable() {
+  buildTableHeader();
+  filtered = [...results];
+  document.getElementById('search-inp').value = '';
+  sortCol = -1; sortAsc = true;
+  renderPage();
+  document.getElementById('tbl-section').style.display = 'block';
+}
+
+/* ══════════════════════════════════════════════════════════
+   EXCEL EXPORT
+══════════════════════════════════════════════════════════ */
+function doExcel() {
+  if (!results.length) return;
+  const wb = XLSX.utils.book_new();
+  // Author tag — embedded in workbook
+  wb.Props = {
+    Title:    'Rekap BPPU PPh Unifikasi',
+    Subject:  'Bukti Pemotongan/Pemungutan PPh Unifikasi DJP RI',
+    Author:   'ALDI — BPPU Enterprise Tool v2.0',
+    Company:  'ALDI',
+    Keywords: 'BPPU PPh Unifikasi DJP',
+    CreatedDate: new Date(),
+  };
+
+  /* ── Styles helpers ── */
+  const hdStyle = (rgb) => ({
+    fill:      { fgColor: { rgb } },
+    font:      { bold: true, color: { rgb: 'FFFFFF' }, sz: 10 },
+    alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+    border: {
+      bottom: { style: 'medium', color: { rgb: '2DD4FF' } },
+      right:  { style: 'thin',   color: { rgb: '254570' } },
+    }
+  });
+  const dataStyle = (even, isNum, statusVal) => {
+    let fontColor = '111827';
+    if (statusVal === 'VALID')   fontColor = '14532D';
+    if (statusVal === 'PERIKSA') fontColor = '7F1D1D';
+    return {
+      fill:      { fgColor: { rgb: even ? 'EEF4FF' : 'FFFFFF' } },
+      font:      { sz: 9, color: { rgb: fontColor } },
+      alignment: { horizontal: isNum ? 'right' : 'left', vertical: 'center' },
+    };
+  };
+  const totalStyle = {
+    fill:      { fgColor: { rgb: '0D1526' } },
+    font:      { bold: true, color: { rgb: '2DD4FF' }, sz: 10 },
+    alignment: { horizontal: 'right', vertical: 'center' },
+  };
+  const totalLblStyle = {
+    fill:      { fgColor: { rgb: '0D1526' } },
+    font:      { bold: true, color: { rgb: '2DD4FF' }, sz: 10 },
+    alignment: { horizontal: 'left', vertical: 'center' },
+  };
+
+  function applyHdr(ws, rowIdx, numCols, rgb) {
+    for (let c = 0; c < numCols; c++) {
+      const addr = XLSX.utils.encode_cell({ r: rowIdx, c });
+      if (ws[addr]) ws[addr].s = hdStyle(rgb);
+    }
+  }
+
+  /* ── Sheet 1: Detail ── */
+  const hdr1 = [
+    'No','Nomor BPPU','Masa Pajak','NPWP/NIK Penerima','Nama Penerima','NITKU Penerima',
+    'Kode Objek Pajak','Objek Pajak','DPP (Rp)','Tarif (%)','PPh (Rp)',
+    'Jenis PPh','Nomor Dokumen','Tanggal Dokumen',
+    'NPWP Pemotong','Nama Pemotong','NITKU Pemotong','Tanggal Pemotongan',
+    'Sifat','Status BPPU',
+    'Status','Catatan',
+  ];
+  const numericCols1 = new Set([8, 9, 10]); // DPP, Tarif, PPh (shifted by NITKU Penerima col)
+
+  // Export mengikuti filter aktif (jika tidak ada filter = semua data)
+  const exportData = filtered.length > 0 ? filtered : results;
+  const rows1 = exportData.map((d, i) => [
+    i + 1,
+    d.nomor, d.masaPajak, d.npwpDipotong, d.namaDipotong, d.nituPenerima,
+    d.kodeObjek, d.objekPajak,
+    d.dpp || 0, d.tarif || 0, d.pph || 0,
+    d.jenisPPh, d.noDoc, d.tglDoc,
+    d.npwpPemotong, d.namaPemotong, d.nituPemotong, d.tglPotong,
+    d.sifat || '', d.statusBppu || '',
+    d.valid ? 'VALID' : 'PERIKSA',
+    d.validNote || '',
+  ]);
+
+  const ws1 = XLSX.utils.aoa_to_sheet([hdr1, ...rows1]);
+  ws1['!cols'] = [
+    {wch:5},{wch:16},{wch:12},{wch:20},{wch:32},{wch:32},
+    {wch:14},{wch:30},{wch:18},{wch:9},{wch:18},
+    {wch:12},{wch:20},{wch:22},
+    {wch:20},{wch:32},{wch:32},{wch:22},
+    {wch:14},{wch:16},
+    {wch:10},{wch:40},
+  ];
+  ws1['!freeze'] = { xSplit: 0, ySplit: 1 };
+
+  applyHdr(ws1, 0, hdr1.length, '0D2A4E');
+
+  for (let R = 1; R <= rows1.length; R++) {
+    const even      = R % 2 === 0;
+    const statusVal = rows1[R - 1][20]; // index 20 = Status (VALID/PERIKSA)
+    for (let C = 0; C < hdr1.length; C++) {
+      const addr = XLSX.utils.encode_cell({ r: R, c: C });
+      if (!ws1[addr]) ws1[addr] = { v: '', t: 's' };
+      const isNum = numericCols1.has(C);
+      ws1[addr].s = dataStyle(even, isNum, C === 20 ? statusVal : null);
+      if (isNum && typeof ws1[addr].v === 'number') ws1[addr].z = '#,##0';
+    }
+  }
+
+  // Total row
+  const totDPP = exportData.reduce((s, d) => s + (d.dpp || 0), 0);
+  const totPPh = exportData.reduce((s, d) => s + (d.pph || 0), 0);
+  const totalRow = new Array(hdr1.length).fill('');
+  totalRow[1] = 'GRAND TOTAL';
+  totalRow[8] = totDPP;
+  totalRow[10] = totPPh;
+  XLSX.utils.sheet_add_aoa(ws1, [totalRow], { origin: -1 });
+  const lastR1 = rows1.length + 1;
+  for (let C = 0; C < hdr1.length; C++) {
+    const addr = XLSX.utils.encode_cell({ r: lastR1, c: C });
+    if (!ws1[addr]) ws1[addr] = { v: '', t: 's' };
+    ws1[addr].s = [8, 10].includes(C) ? totalStyle : totalLblStyle;
+    if ([8, 10].includes(C)) ws1[addr].z = '#,##0';
+  }
+
+  XLSX.utils.book_append_sheet(wb, ws1, 'Detail BPPU');
+
+  /* ── Sheet 2: Ringkasan per Pemotong ── */
+  if (document.getElementById('tog-summary').classList.contains('on')) {
+    const byPmtg = {};
+    exportData.forEach(d => {
+      const key = (d.namaPemotong || d.npwpPemotong || 'TIDAK DIKETAHUI').trim();
+      if (!byPmtg[key]) byPmtg[key] = { nama: key, npwp: d.npwpPemotong || '', n: 0, dpp: 0, pph: 0 };
+      byPmtg[key].n++;
+      byPmtg[key].dpp += d.dpp || 0;
+      byPmtg[key].pph += d.pph || 0;
+    });
+    const hdr2   = ['No','NPWP Pemotong','Nama Pemotong','Jumlah BPPU','Total DPP (Rp)','Total PPh (Rp)'];
+    const rows2  = Object.values(byPmtg)
+      .sort((a, b) => b.pph - a.pph)
+      .map((v, i) => [i + 1, v.npwp, v.nama, v.n, v.dpp, v.pph]);
+    const totRow2 = ['', 'GRAND TOTAL', '', rows2.reduce((s,r)=>s+r[3],0), rows2.reduce((s,r)=>s+r[4],0), rows2.reduce((s,r)=>s+r[5],0)];
+
+    const ws2 = XLSX.utils.aoa_to_sheet([hdr2, ...rows2, totRow2]);
+    ws2['!cols'] = [{wch:5},{wch:20},{wch:35},{wch:12},{wch:20},{wch:20}];
+    applyHdr(ws2, 0, hdr2.length, '0A3D0A');
+    const lr2 = rows2.length + 1;
+    for (let C = 0; C < hdr2.length; C++) {
+      const addr = XLSX.utils.encode_cell({ r: lr2, c: C });
+      if (!ws2[addr]) ws2[addr] = { v: '', t: 's' };
+      ws2[addr].s = [4,5].includes(C) ? totalStyle : totalLblStyle;
+      if ([4,5].includes(C)) ws2[addr].z = '#,##0';
+    }
+    XLSX.utils.book_append_sheet(wb, ws2, 'Ringkasan Pemotong');
+
+    /* ── Sheet 3: Ringkasan per Objek Pajak ── */
+    const byObj = {};
+    exportData.forEach(d => {
+      const key = ((d.kodeObjek || '') + '|' + (d.objekPajak || 'Tidak diketahui')).trim();
+      if (!byObj[key]) byObj[key] = { kode: d.kodeObjek || '', nama: d.objekPajak || '', n: 0, dpp: 0, pph: 0 };
+      byObj[key].n++;
+      byObj[key].dpp += d.dpp || 0;
+      byObj[key].pph += d.pph || 0;
+    });
+    const hdr3  = ['No','Kode Objek Pajak','Nama Objek Pajak','Jumlah BPPU','Total DPP (Rp)','Total PPh (Rp)'];
+    const rows3 = Object.values(byObj)
+      .sort((a, b) => b.pph - a.pph)
+      .map((v, i) => [i + 1, v.kode, v.nama, v.n, v.dpp, v.pph]);
+    const totRow3 = ['', '', 'GRAND TOTAL', rows3.reduce((s,r)=>s+r[3],0), rows3.reduce((s,r)=>s+r[4],0), rows3.reduce((s,r)=>s+r[5],0)];
+
+    const ws3 = XLSX.utils.aoa_to_sheet([hdr3, ...rows3, totRow3]);
+    ws3['!cols'] = [{wch:5},{wch:16},{wch:35},{wch:12},{wch:20},{wch:20}];
+    applyHdr(ws3, 0, hdr3.length, '3D0A3D');
+    const lr3 = rows3.length + 1;
+    for (let C = 0; C < hdr3.length; C++) {
+      const addr = XLSX.utils.encode_cell({ r: lr3, c: C });
+      if (!ws3[addr]) ws3[addr] = { v: '', t: 's' };
+      ws3[addr].s = [4,5].includes(C) ? totalStyle : totalLblStyle;
+      if ([4,5].includes(C)) ws3[addr].z = '#,##0';
+    }
+    XLSX.utils.book_append_sheet(wb, ws3, 'Ringkasan Objek Pajak');
+
+    /* ── Sheet 4: Per Masa Pajak ── */
+    const byMasa = {};
+    exportData.forEach(d => {
+      const key = d.masaPajak || 'Tidak diketahui';
+      if (!byMasa[key]) byMasa[key] = { masa: key, n: 0, dpp: 0, pph: 0 };
+      byMasa[key].n++;
+      byMasa[key].dpp += d.dpp || 0;
+      byMasa[key].pph += d.pph || 0;
+    });
+    const hdr4  = ['No','Masa Pajak','Jumlah BPPU','Total DPP (Rp)','Total PPh (Rp)'];
+    const rows4 = Object.values(byMasa)
+      .sort((a, b) => {
+        // Parse "MM-YYYY" → YYYYMM for correct chronological sort
+        const toYYYYMM = s => { const m = (s||'').match(/^(\d{1,2})-(\d{4})$/); return m ? parseInt(m[2])*100+parseInt(m[1]) : 0; };
+        return toYYYYMM(a.masa) - toYYYYMM(b.masa);
+      })
+      .map((v, i) => [i + 1, v.masa, v.n, v.dpp, v.pph]);
+
+    const ws4 = XLSX.utils.aoa_to_sheet([hdr4, ...rows4]);
+    ws4['!cols'] = [{wch:5},{wch:14},{wch:12},{wch:20},{wch:20}];
+    applyHdr(ws4, 0, hdr4.length, '3D2D0A');
+    XLSX.utils.book_append_sheet(wb, ws4, 'Per Masa Pajak');
+  }
+
+  /* ── Sheet 5: Perlu Diperiksa ── */
+  if (document.getElementById('tog-err').classList.contains('on')) {
+    const invalid = exportData.filter(d => !d.valid || d.duplikat);
+    if (invalid.length > 0) {
+      const hdr5  = ['No','Nama File','Nomor BPPU','Catatan / Missing Fields'];
+      const rows5 = invalid.map((d, i) => [i + 1, d.filename, d.nomor, d.validNote || 'Data tidak lengkap']);
+      const ws5   = XLSX.utils.aoa_to_sheet([hdr5, ...rows5]);
+      ws5['!cols'] = [{wch:5},{wch:42},{wch:20},{wch:55}];
+      applyHdr(ws5, 0, hdr5.length, '4D0000');
+      XLSX.utils.book_append_sheet(wb, ws5, 'Perlu Diperiksa');
+    }
+  }
+
+  const filterActive = document.getElementById('search-inp').value.trim() !== '';
+  const fname = filterActive
+    ? `Rekap_BPPU_${today()}_filtered.xlsx`
+    : `Rekap_BPPU_${today()}.xlsx`;
+  XLSX.writeFile(wb, fname, { bookType: 'xlsx', type: 'binary', cellStyles: true });
+  toast(`✓ Excel "${fname}" berhasil diunduh`, 'ok');
+  log(`Excel "${fname}" diunduh (${results.length} baris).`, 'ok');
+}
+
+/* ══════════════════════════════════════════════════════════
+   PDF MERGE DOWNLOAD
+══════════════════════════════════════════════════════════ */
+function doMergedPDF() {
+  if (!mergedBytes) return;
+  const blob = new Blob([mergedBytes], { type: 'application/pdf' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `BPPU_Gabungan_${today()}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('✓ PDF gabungan berhasil diunduh', 'ok');
+  log(`PDF gabungan diunduh (${fmtSize(mergedBytes.byteLength)}).`, 'ok');
+}
+
+/* ══════════════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════════════ */
+function fmtRp(n) {
+  if (!n && n !== 0) return '';
+  return Math.round(n).toLocaleString('id-ID');
+}
+
+function fmtSize(bytes) {
+  if (bytes < 1024)       return bytes + ' B';
+  if (bytes < 1024*1024)  return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(1) + ' MB';
+}
+
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+let toastTimer = null;
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.borderColor = type === 'ok' ? 'rgba(34,197,94,.4)' : 'rgba(239,68,68,.4)';
+  el.style.color = type === 'ok' ? 'var(--green)' : 'var(--red)';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.style.display = 'none'; }, 3500);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faktur Pajak Renamer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface2: #1c1c1c;
+    --border: #272727;
+    --accent: #f97316;
+    --accent2: #fb923c;
+    --text: #f0f0f0;
+    --muted: #666;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #fbbf24;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  header {
+    width: 100%;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+  }
+
+  .logo {
+    width: 34px; height: 34px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; color: #000; flex-shrink: 0;
+  }
+
+  header h1 { font-size: 1.05rem; font-weight: 800; }
+  header .sub { font-size: 0.75rem; color: var(--muted); font-family: 'Space Mono', monospace; margin-left: 4px; }
+
+  .main {
+    width: 100%; max-width: 920px;
+    padding: 36px 24px 80px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 6px;
+    padding: 60px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    background: var(--surface);
+  }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: #130a00; }
+  .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .drop-icon { font-size: 2.8rem; margin-bottom: 14px; display: block; }
+  .drop-zone h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; }
+  .drop-zone p { font-size: 0.78rem; color: var(--muted); font-family: 'Space Mono', monospace; line-height: 1.8; }
+  .drop-zone .cap { color: var(--accent); font-weight: 700; }
+
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+  }
+  .stat { background: var(--surface); border: 1px solid var(--border); padding: 14px 18px; border-radius: 3px; }
+  .stat .val { font-size: 1.6rem; font-weight: 800; font-family: 'Space Mono', monospace; line-height: 1; margin-bottom: 4px; }
+  .stat .lbl { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .stat.ok .val { color: var(--green); }
+  .stat.err .val { color: var(--red); }
+  .stat.proc .val { color: var(--yellow); }
+  .stat.total .val { color: var(--accent); }
+
+  .progress-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 18px 22px; }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .progress-title { font-size: 0.78rem; font-weight: 700; }
+  .progress-pct { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--accent); }
+  .progress-track { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.15s; width: 0%; }
+  .progress-eta { margin-top: 8px; font-size: 0.72rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+
+  .actions-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 3px;
+    font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; border: none; transition: all 0.15s;
+  }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover:not(:disabled) { background: var(--accent2); }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-outline:hover:not(:disabled) { border-color: var(--muted); }
+
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+  .table-header-row {
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr 80px 60px;
+    padding: 10px 16px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--muted); font-family: 'Space Mono', monospace;
+    gap: 8px;
+  }
+  .table-body { max-height: 460px; overflow-y: auto; }
+  .table-body::-webkit-scrollbar { width: 6px; }
+  .table-body::-webkit-scrollbar-track { background: var(--surface); }
+  .table-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr 80px 60px;
+    padding: 9px 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 8px; align-items: center;
+    transition: background 0.1s;
+  }
+  .row:last-child { border-bottom: none; }
+  .row:hover { background: var(--surface2); }
+  .row-num { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); text-align: center; }
+  .row-old { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-new { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-new.err-text { color: var(--red); font-size: 0.65rem; }
+
+  .badge { padding: 3px 7px; border-radius: 2px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.5px; font-family: 'Space Mono', monospace; white-space: nowrap; }
+  .badge-ok { background: #14532d; color: #86efac; }
+  .badge-err { background: #450a0a; color: #fca5a5; }
+  .badge-wait { background: var(--surface2); color: var(--muted); }
+
+  .dl-row-btn {
+    padding: 4px 8px; font-size: 0.65rem;
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 2px;
+    cursor: pointer; font-family: 'Space Mono', monospace;
+    transition: all 0.1s;
+  }
+  .dl-row-btn:hover { color: var(--text); border-color: var(--muted); }
+
+  /* Single */
+  .single-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; animation: up 0.25s ease; }
+  @keyframes up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .card-header { padding: 14px 22px; background: var(--surface2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  .card-header span { font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .fields { padding: 20px 22px; display: grid; gap: 12px; }
+  .field { display: grid; grid-template-columns: 200px 1fr; align-items: center; gap: 12px; }
+  .field label { font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .field input { background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--text); padding: 8px 12px; font-family: 'Space Mono', monospace; font-size: 0.82rem; width: 100%; outline: none; transition: border-color 0.15s; }
+  .field input:focus { border-color: var(--accent); }
+  .output-section { padding: 0 22px 18px; }
+  .out-lbl { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); font-family: 'Space Mono', monospace; margin-bottom: 8px; }
+  .out-name { background: #130a00; border: 1px solid var(--accent); border-radius: 3px; padding: 12px 14px; font-family: 'Space Mono', monospace; font-size: 0.82rem; color: var(--accent2); word-break: break-all; }
+  .card-actions { padding: 14px 22px 20px; display: flex; gap: 10px; }
+
+  .processing { display: flex; align-items: center; gap: 12px; padding: 18px 22px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; font-family: 'Space Mono', monospace; font-size: 0.82rem; color: var(--muted); }
+  .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 640px) {
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .table-header-row, .row { grid-template-columns: 36px 1fr 80px 40px; }
+    .col-old { display: none; }
+    .field { grid-template-columns: 1fr; gap: 4px; }
+    header { padding: 16px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">FP</div>
+  <h1>Faktur Pajak Renamer <span class="sub">v2.0 — bulk ready</span></h1>
+</header>
+
+<div class="main">
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept=".pdf" multiple>
+    <span class="drop-icon">📂</span>
+    <h2>Drop PDF Faktur Pajak di sini</h2>
+    <p>Klik atau drag &amp; drop · Support <span class="cap">ribuan file sekaligus</span><br>
+    Proses 100% lokal di browser — tidak ada upload ke server</p>
+  </div>
+
+  <div id="outputArea"></div>
+</div>
+
+<script>
+(async () => {
+  const WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  try {
+    const res = await fetch(WORKER_URL);
+    if (res.ok) {
+      const blob = new Blob([await res.text()], { type: 'application/javascript' });
+      pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
+    } else {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER_URL;
+    }
+  } catch(e) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER_URL;
+  }
+})();
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const outputArea = document.getElementById('outputArea');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag-over');
+  handleFiles([...e.dataTransfer.files].filter(f => f.type === 'application/pdf'));
+});
+fileInput.addEventListener('change', () => handleFiles([...fileInput.files]));
+
+async function extractText(file) {
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  let text = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const c = await page.getTextContent();
+    text += c.items.map(s => s.str).join(' ') + '\n';
+  }
+  return text;
+}
+
+function parseInvoice(text) {
+  const r = {};
+
+  // ── 1. Nomor Faktur Pajak ──────────────────────────────────────────
+  // Selalu 15-20 digit, muncul setelah label "Kode dan Nomor Seri Faktur Pajak:"
+  const fp = text.match(/Kode\s+dan\s+Nomor\s+Seri\s+Faktur\s+Pajak\s*:?\s*([0-9]{15,20})/i)
+           || text.match(/Nomor\s+Seri\s+Faktur\s+Pajak\s*:?\s*([0-9]{15,20})/i);
+  r.fakturNo = fp ? fp[1].trim() : '';
+
+  // ── 2. Nama Customer (Pembeli) ─────────────────────────────────────
+  // Cari "Nama :" setelah blok Pembeli, stop sebelum "Alamat" / "NPWP" / "#angka"
+  const buyerBlock = text.match(/Pembeli[\s\S]{0,300}?Nama\s*:\s*(.+?)(?=\s*Alamat|\s*NPWP|\s*NIK|\s*Nomor\s*Paspor|\s*#[0-9]|\n)/i);
+  if (buyerBlock) {
+    r.customerName = buyerBlock[1].trim();
+  } else {
+    // Fallback: kemunculan "Nama :" ke-2, stop sebelum Alamat/NPWP
+    const allNames = [...text.matchAll(/Nama\s*:\s*(.+?)(?=\s*Alamat|\s*NPWP|\s*NIK|\s*#[0-9]|\n|$)/gi)];
+    if (allNames.length >= 2) r.customerName = allNames[1][1].trim();
+    else if (allNames.length === 1) r.customerName = allNames[0][1].trim();
+    else r.customerName = '';
+  }
+
+  // Bersihkan sisa karakter aneh
+  r.customerName = r.customerName
+    .replace(/\s*Alamat.*/i, '')
+    .replace(/\s*NPWP.*/i, '')
+    .replace(/\s*#[0-9]+.*/, '')
+    .replace(/\s+[0-9]{10,}.*/, '')
+    .trim();
+
+  // ── 3. Referensi (Invoice / No. Job) ──────────────────────────────
+  // Format konsisten: (Referensi: INVOICE/NOJOB)
+  // Contoh: (Referensi: SUB600136522/S509468003)
+  //         (Referensi: JKT600135894/B601303125)
+  const ref = text.match(/Referensi\s*[:\-]?\s*([A-Z]{2,}[0-9]+)\s*[\/\-]\s*([A-Z][A-Z0-9]*)/i);
+  if (ref) {
+    r.invoice = ref[1].trim();
+    r.jobNo   = ref[2].trim();
+  } else {
+    r.invoice = '';
+    r.jobNo   = '';
+  }
+
+  return r;
+}
+
+function buildFilename(d) {
+  const parts = [];
+  if (d.fakturNo) parts.push(d.fakturNo);
+  if (d.customerName) parts.push(d.customerName);
+  const ref = [d.invoice, d.jobNo].filter(Boolean).join('-');
+  if (ref) parts.push(ref);
+  return parts.join(' ') + '.PDF';
+}
+
+async function runConcurrent(tasks, limit, onDone) {
+  let idx = 0;
+  async function worker() {
+    while (idx < tasks.length) {
+      const i = idx++;
+      await tasks[i]();
+      onDone(i);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, worker));
+}
+
+async function handleFiles(files) {
+  if (!files.length) return;
+  if (files.length === 1) { await handleSingle(files[0]); return; }
+  await handleBatch(files);
+}
+
+async function handleSingle(file) {
+  outputArea.innerHTML = `<div class="processing"><div class="spinner"></div>Mengekstrak data...</div>`;
+  let data;
+  try {
+    const text = await extractText(file);
+    data = parseInvoice(text);
+  } catch(e) {
+    outputArea.innerHTML = `<div class="processing" style="color:var(--red)">Gagal: ${esc(e.message)}</div>`;
+    return;
+  }
+
+  const card = document.createElement('div');
+  card.className = 'single-card';
+  card.innerHTML = `
+    <div class="card-header"><div class="dot"></div><span>Hasil Ekstraksi</span></div>
+    <div class="fields">
+      <div class="field"><label>No. Faktur Pajak</label><input id="f0" value="${esc(data.fakturNo)}"></div>
+      <div class="field"><label>Nama Customer</label><input id="f1" value="${esc(data.customerName)}"></div>
+      <div class="field"><label>Invoice No.</label><input id="f2" value="${esc(data.invoice)}"></div>
+      <div class="field"><label>No. Job</label><input id="f3" value="${esc(data.jobNo)}"></div>
+    </div>
+    <div class="output-section">
+      <div class="out-lbl">Nama File Baru</div>
+      <div class="out-name" id="prev">${esc(buildFilename(data))}</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn btn-primary" id="dlBtn">Download</button>
+      <button class="btn btn-outline" id="resetBtn">Reset</button>
+    </div>
+  `;
+  outputArea.innerHTML = '';
+  outputArea.appendChild(card);
+
+  const prev = card.querySelector('#prev');
+  const get = () => ({ fakturNo: card.querySelector('#f0').value.trim(), customerName: card.querySelector('#f1').value.trim(), invoice: card.querySelector('#f2').value.trim(), jobNo: card.querySelector('#f3').value.trim() });
+  [0,1,2,3].forEach(i => card.querySelector(`#f${i}`).addEventListener('input', () => prev.textContent = buildFilename(get())));
+  card.querySelector('#dlBtn').addEventListener('click', () => dlFile(file, buildFilename(get())));
+  card.querySelector('#resetBtn').addEventListener('click', () => { outputArea.innerHTML=''; fileInput.value=''; });
+}
+
+let batchData = [];
+
+async function handleBatch(files) {
+  batchData = files.map(f => ({ file: f, status: 'wait', data: null, err: null }));
+  const total = files.length;
+  const MAX_ROWS = 2000;
+
+  outputArea.innerHTML = `
+    <div class="stats-bar">
+      <div class="stat total"><div class="val" id="sTot">${total}</div><div class="lbl">Total</div></div>
+      <div class="stat proc"><div class="val" id="sProc">0</div><div class="lbl">Diproses</div></div>
+      <div class="stat ok"><div class="val" id="sOk">0</div><div class="lbl">Berhasil</div></div>
+      <div class="stat err"><div class="val" id="sErr">0</div><div class="lbl">Error</div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span class="progress-title" id="pTitle">Memproses...</span>
+        <span class="progress-pct" id="pPct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-bar" id="pBar"></div></div>
+      <div class="progress-eta" id="pEta">Menghitung kecepatan...</div>
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-primary" id="dlFolderBtn" disabled>📁 Simpan ke Folder</button>
+      <button class="btn btn-outline" id="dlZipBtn" disabled>⬇ Backup ZIP</button>
+      <button class="btn btn-outline" id="resetBtn">↺ Reset</button>
+    </div>
+    <div id="saveInfo" style="font-family:Space Mono,monospace;font-size:0.72rem;color:var(--muted);padding:2px 0;display:none;">Menulis file langsung ke folder lokal — bebas MOTW, Windows tidak akan blokir.</div>
+    <div class="table-wrap">
+      <div class="table-header-row">
+        <div>#</div><div>File Asli</div><div class="col-old">Nama Baru</div><div>Status</div><div>DL</div>
+      </div>
+      <div class="table-body" id="tbody"></div>
+    </div>
+  `;
+
+  const tbody = document.getElementById('tbody');
+  const visCount = Math.min(total, MAX_ROWS);
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < visCount; i++) frag.appendChild(makeRow(i, batchData[i].file.name, '', 'wait', false));
+  tbody.appendChild(frag);
+
+  if (total > MAX_ROWS) {
+    const note = document.createElement('div');
+    note.style.cssText = 'padding:12px 16px;font-size:0.7rem;color:var(--muted);font-family:Space Mono,monospace;text-align:center;border-top:1px solid var(--border)';
+    note.textContent = `+ ${total - MAX_ROWS} file lainnya diproses tapi tidak ditampilkan di tabel (performa)`;
+    tbody.appendChild(note);
+  }
+
+  document.getElementById('resetBtn').addEventListener('click', () => { batchData=[]; outputArea.innerHTML=''; fileInput.value=''; });
+
+  let done=0, ok=0, err=0;
+  const t0 = Date.now();
+
+  // Batch DOM update - throttle to every 50ms
+  let pendingUpdate = new Set();
+  let rafScheduled = false;
+
+  function scheduleRender() {
+    if (rafScheduled) return;
+    rafScheduled = true;
+    requestAnimationFrame(() => {
+      pendingUpdate.forEach(i => {
+        if (i >= MAX_ROWS) return;
+        const r = batchData[i];
+        const row = tbody.querySelector(`[data-idx="${i}"]`);
+        if (row) row.replaceWith(makeRow(i, r.file.name, r.status==='done' ? buildFilename(r.data) : (r.err||''), r.status, r.status==='done'));
+      });
+      pendingUpdate.clear();
+      rafScheduled = false;
+    });
+  }
+
+  const updateUI = (i) => {
+    done++;
+    const r = batchData[i];
+    if (r.status === 'done') ok++; else err++;
+
+    document.getElementById('sProc').textContent = done;
+    document.getElementById('sOk').textContent = ok;
+    document.getElementById('sErr').textContent = err;
+
+    const pct = Math.round(done/total*100);
+    document.getElementById('pBar').style.width = pct+'%';
+    document.getElementById('pPct').textContent = pct+'%';
+
+    const elapsed = (Date.now()-t0)/1000;
+    const rate = done/elapsed;
+    const remaining = (total-done)/rate;
+    document.getElementById('pEta').textContent = done < total
+      ? `~${fmtTime(remaining)} tersisa · ${Math.round(rate)} file/detik`
+      : `Selesai dalam ${fmtTime(elapsed)} · ${Math.round(rate)} file/detik rata-rata`;
+
+    pendingUpdate.add(i);
+    scheduleRender();
+
+    if (done === total) {
+      document.getElementById('pTitle').textContent = `Selesai — ${ok} berhasil, ${err} error`;
+      document.getElementById('dlZipBtn').disabled = false;
+      document.getElementById('dlFolderBtn').disabled = false;
+    }
+  };
+
+  const tasks = batchData.map((r, i) => async () => {
+    try {
+      r.data = parseInvoice(await extractText(r.file));
+      r.status = 'done';
+    } catch(e) {
+      r.status = 'error'; r.err = e.message;
+    }
+  });
+
+  await runConcurrent(tasks, 8, updateUI);
+  document.getElementById('dlZipBtn').addEventListener('click', downloadZip);
+  document.getElementById('dlFolderBtn').addEventListener('click', saveToFolder);
+}
+
+function makeRow(i, oldName, newName, status, showDl) {
+  const row = document.createElement('div');
+  row.className = 'row'; row.dataset.idx = i;
+  const badge = status==='done' ? `<span class="badge badge-ok">OK</span>`
+              : status==='error' ? `<span class="badge badge-err">ERR</span>`
+              : `<span class="badge badge-wait">—</span>`;
+  const dl = showDl ? `<button class="dl-row-btn" onclick="dlSingleBatch(${i})">DL</button>` : `<span></span>`;
+  row.innerHTML = `
+    <div class="row-num">${i+1}</div>
+    <div class="row-old" title="${esc(oldName)}">${esc(oldName)}</div>
+    <div class="row-new col-old ${status==='error'?'err-text':''}" title="${esc(newName)}">${esc(newName)}</div>
+    <div>${badge}</div>
+    <div>${dl}</div>
+  `;
+  return row;
+}
+
+async function saveToFolder() {
+  if (!('showDirectoryPicker' in window)) {
+    alert('Browser tidak support File System Access API. Gunakan Chrome/Edge versi terbaru, atau pakai tombol Backup ZIP.');
+    return;
+  }
+  let dirHandle;
+  try {
+    dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+  } catch(e) {
+    return; // user cancel
+  }
+
+  const btn = document.getElementById('dlFolderBtn');
+  btn.disabled = true;
+
+  const info = document.getElementById('saveInfo');
+  info.style.display = 'block';
+
+  const ready = batchData.filter(r => r.status === 'done');
+  const seen = {};
+  let saved = 0, failed = 0;
+
+  for (const r of ready) {
+    let name = buildFilename(r.data);
+    seen[name] = (seen[name]||0)+1;
+    if (seen[name] > 1) name = name.replace('.PDF', ` (${seen[name]}).PDF`);
+    try {
+      const fileHandle = await dirHandle.getFileHandle(name, { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(await r.file.arrayBuffer());
+      await writable.close();
+      saved++;
+    } catch(e) {
+      failed++;
+    }
+    btn.textContent = `Menyimpan... ${saved+failed}/${ready.length}`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = `📁 Simpan ke Folder`;
+  info.textContent = `✓ ${saved} file tersimpan${failed ? `, ${failed} gagal` : ''} — langsung ke folder lokal, bebas MOTW.`;
+}
+
+async function downloadZip() {
+  const btn = document.getElementById('dlZipBtn');
+  btn.disabled = true;
+  const zip = new JSZip();
+  const seen = {};
+  for (const r of batchData) {
+    if (r.status !== 'done') continue;
+    let name = buildFilename(r.data);
+    seen[name] = (seen[name]||0)+1;
+    if (seen[name] > 1) name = name.replace('.PDF', ` (${seen[name]}).PDF`);
+    zip.file(name, r.file);
+  }
+  const blob = await zip.generateAsync({ type:'blob', compression:'STORE', streamFiles:true }, m => {
+    btn.textContent = `ZIP ${Math.round(m.percent)}%`;
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `Faktur-Renamed-${new Date().toISOString().slice(0,10)}.zip`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+  btn.disabled = false; btn.textContent = '⬇ Backup ZIP';
+}
+
+window.dlSingleBatch = i => { const r=batchData[i]; if(r&&r.status==='done') dlFile(r.file, buildFilename(r.data)); };
+
+function dlFile(file, name) {
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function fmtTime(s) { return s<60 ? `${Math.round(s)}d` : `${Math.floor(s/60)}m ${Math.round(s%60)}d`; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>
